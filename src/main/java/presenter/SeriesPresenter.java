@@ -1,11 +1,11 @@
 package presenter;
 
 import dyds.tvseriesinfo.fulllogic.DataBase;
+import dyds.tvseriesinfo.fulllogic.SearchResult;
 import model.SearchModel;
 import view.SearchView;
 
-import javax.swing.*;
-import java.awt.*;
+import java.util.ArrayList;
 
 public class SeriesPresenter {
 
@@ -30,4 +30,16 @@ public class SeriesPresenter {
         //System.out.println(DataBase.getExtract("nada"));
     }
 
+    public void searchSeries() {
+        String seriesName = view.getSeriesName();
+
+        //Controlar vacia
+        ArrayList<SearchResult> PagesFound = model.searchSeries(seriesName);
+
+    }
+
+    public void getSelectedExtract(SearchResult selectedResult){
+        String extract = model.searchPageExtract(selectedResult);
+        view.setSearchResultTextPane(extract);
+    }
 }
