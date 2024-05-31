@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 import dyds.tvseriesinfo.fulllogic.DataBase;
-import dyds.tvseriesinfo.fulllogic.SearchResult;
+import utils.WikiPage;
 import presenter.SeriesPresenter;
 
 public class SearchView {
@@ -27,32 +27,16 @@ public class SearchView {
   String selectedResultTitle = null; //For storage purposes, it may not coincide with the searched term (see below)
   String text = ""; //Last searched text! this variable is central for everything
 
+
   public SearchView( SeriesPresenter presenter) {
 
     this.presenter = presenter;
 
-    // Carga los titulos guardados en la segunda pestaña
-    selectSavedComboBox.setModel(new DefaultComboBoxModel(DataBase.getTitles().stream().sorted().toArray()));
+  }
 
-    // Establece que el texto de los JTextPane sea HTML
+  private void setUpSearchPanel() {
     searchResultTextPane.setContentType("text/html");
-    showSavedTextPane.setContentType("text/html");
-
-
-    // this is needed to open a link in the browser
-
-    //textField1.addActionListener(actionEvent -> {System.out.println("ACCION!!!");});
-   // System.out.println("TYPED!!!");
-    searchTextField.addPropertyChangeListener(propertyChangeEvent -> {
-              System.out.println("TYPED!!!");
-    });
-
-    //ToAlberto: They told us that you were having difficulties understanding this code,
-    //Don't panic! We added several helpful comments to guide you through it ;)
-
-    // From here on is where the magic happends: querying wikipedia, showing results, etc.
     searchButton.addActionListener(e ->  { presenter.searchSeries();});
-
     saveLocallyButton.addActionListener(actionEvent -> {
       if(text != ""){
         // save to DB  <o/
@@ -60,57 +44,62 @@ public class SearchView {
         selectSavedComboBox.setModel(new DefaultComboBoxModel(DataBase.getTitles().stream().sorted().toArray()));
       }
     });
+  }
 
-    selectSavedComboBox.addActionListener(actionEvent -> showSavedTextPane.setText(textToHtml(DataBase.getExtract(selectSavedComboBox.getSelectedItem().toString()))));
+  private void setUpSavedPanel(){
+
+    setUpComboBox();
+
+    showSavedTextPane.setContentType("text/html");
+
+    setUpPopupMenu();
+
+  }
+
+  private void setUpPopupMenu() {
 
     JPopupMenu storedInfoPopup = new JPopupMenu();
 
     JMenuItem deleteItem = new JMenuItem("Delete!");
-    deleteItem.addActionListener(actionEvent -> {
-        if(selectSavedComboBox.getSelectedIndex() > -1){
-          DataBase.deleteEntry(selectSavedComboBox.getSelectedItem().toString());
-          selectSavedComboBox.setModel(new DefaultComboBoxModel(DataBase.getTitles().stream().sorted().toArray()));
-          showSavedTextPane.setText("");
-        }
-    });
+    deleteItem.addActionListener(actionEvent -> { presenter.deleteSelectedExtract();  });
     storedInfoPopup.add(deleteItem);
 
     JMenuItem saveItem = new JMenuItem("Save Changes!");
-    saveItem.addActionListener(actionEvent -> {
-        // save to DB  <o/
-        DataBase.saveInfo(selectSavedComboBox.getSelectedItem().toString().replace("'", "`"), showSavedTextPane.getText());  //Dont forget the ' sql problem
-        //comboBox1.setModel(new DefaultComboBoxModel(DataBase.getTitles().stream().sorted().toArray()));
-    });
+    saveItem.addActionListener(actionEvent -> { presenter.saveExtractChanges();  });
     storedInfoPopup.add(saveItem);
 
     showSavedTextPane.setComponentPopupMenu(storedInfoPopup);
-
-
   }
 
+  private void setUpComboBox() {
 
-  private void setWorkingStatus() {
+    JComboBox selectSavedComboBox = new JComboBox<>();
+
+    presenter.initializeSavedPanel();
+
+      }
+
+  public void setWorkingStatus() {
     for(Component c: this.searchPanel.getComponents()) c.setEnabled(false);
     searchResultTextPane.setEnabled(false);
   }
 
-  private void setWatingStatus() {
+  public void setWatingStatus() {
     for(Component c: this.searchPanel.getComponents()) c.setEnabled(true);
     searchResultTextPane.setEnabled(true);
   }
 
-  public void showResults(ArrayList<SearchResult> searchResults){
+  public void showResults(ArrayList<WikiPage> wikiPages){
     JPopupMenu searchOptionsMenu = new JPopupMenu("Search Results");
-    for(SearchResult searchResult : searchResults){
-      searchResult.addActionListener(actionEvent -> {
-        selectedResultTitle = searchResult.title;
-        presenter.getSelectedExtract(searchResult);
+    for(WikiPage wikiPage : wikiPages){
+      wikiPage.getGraphicMenuItem().addActionListener(actionEvent -> {
+        selectedResultTitle = wikiPage.getTitle();
+        presenter.getSelectedExtract(wikiPage);
 
       });
-      searchOptionsMenu.add(searchResult);
+      searchOptionsMenu.add(wikiPage.getGraphicMenuItem());
       searchOptionsMenu.show(searchResultTextPane, searchResultTextPane.getX(), searchResultTextPane.getY());
     }
-    setWatingStatus();
   }
 
   public void showView(){
@@ -119,6 +108,10 @@ public class SearchView {
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frame.pack();
     frame.setVisible(true);
+
+    setUpSearchPanel();
+
+    setUpSavedPanel();
 
     try {
       // Set System L&F
@@ -147,19 +140,32 @@ public class SearchView {
     searchResultTextPane.setCaretPosition(0);
   }
 
-  public static String textToHtml(String text) {
+  public void setSelectSavedComboBox(Object[] titles){
 
-    StringBuilder builder = new StringBuilder();
+    selectSavedComboBox.setModel(new DefaultComboBoxModel(titles));
+    selectSavedComboBox.addActionListener(actionEvent -> { System.out.println("Aprete el menu");presenter.showSelectedExtract();});
 
-    builder.append("<font face=\"arial\">");
+  }
 
-    String fixedText = text
-            .replace("'", "`"); //Replace to avoid SQL errors, we will have to find a workaround..
 
-    builder.append(fixedText);
 
-    builder.append("</font>");
+  public String getSeletedSavedTitle() {
+    return selectSavedComboBox.getSelectedItem().toString();
+  }
 
-    return builder.toString();
+  public void setSelectedExtract(String extract) {
+     showSavedTextPane.setText(extract);
+  }
+
+  public boolean existSelectedEntry() {
+    return (selectSavedComboBox.getSelectedIndex() > -1);
+  }
+
+  public void emptySavedTextPane() {
+    showSavedTextPane.setText("");
+  }
+
+  public String getSelectedSavedExtract() {
+    return showSavedTextPane.getText();
   }
 }

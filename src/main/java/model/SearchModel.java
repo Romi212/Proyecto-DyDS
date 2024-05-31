@@ -4,7 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dyds.tvseriesinfo.fulllogic.SearchResult;
+import dyds.tvseriesinfo.fulllogic.DataBase;
+import utils.WikiPage;
 import dyds.tvseriesinfo.fulllogic.WikipediaPageAPI;
 import dyds.tvseriesinfo.fulllogic.WikipediaSearchAPI;
 import presenter.SeriesPresenter;
@@ -12,7 +13,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -44,10 +44,10 @@ public class SearchModel {
         this.presenter = presenter;
     }
 
-    public ArrayList<SearchResult> searchSeries(String seriesName) {
+    public ArrayList<WikiPage> searchSeries(String seriesName) {
 
         Response<String> searchResponse;
-        ArrayList<SearchResult> searchResultsArray = new ArrayList<>();
+        ArrayList<WikiPage> searchResultsArray = new ArrayList<>();
         try {
 
             //ToAlberto: First, lets search for the term in Wikipedia
@@ -77,8 +77,8 @@ public class SearchModel {
                 String searchResultPageId = searchResultElement.get("pageid").getAsString();
                 String searchResultSnippet = searchResultElement.get("snippet").getAsString();
 
-                SearchResult searchResult = new SearchResult(searchResultTitle, searchResultPageId, searchResultSnippet);
-                searchResultsArray.add(searchResult);
+                WikiPage wikiPage = new WikiPage(searchResultTitle, searchResultPageId, searchResultSnippet);
+                searchResultsArray.add(wikiPage);
 
                 //toAlberto: Adding an event to retrive the wikipage when the user clicks an item in the Popupmenu
 
@@ -91,13 +91,13 @@ public class SearchModel {
         return searchResultsArray;
     }
 
-    public String searchPageExtract(SearchResult searchResult){
+    public String searchPageExtract(WikiPage wikiPage){
             String text = "";
             try {
                 //This may take some time, dear user be patient in the meanwhile!
                 //setWorkingStatus();
                 //Now fetch the info of the select page
-                Response<String> callForPageResponse = pageAPI.getExtractByPageID(searchResult.pageID).execute();
+                Response<String> callForPageResponse = pageAPI.getExtractByPageID(wikiPage.getPageID()).execute();
 
                 System.out.println("JSON " + callForPageResponse.body());
 
@@ -113,7 +113,7 @@ public class SearchModel {
                 if (jsonPageExtract == null) {
                     text = "No Results";
                 } else {
-                    text = "<h1>" + searchResult.title + "</h1>";
+                    text = "<h1>" + wikiPage.getTitle() + "</h1>";
                     text += jsonPageExtract.getAsString().replace("\\n", "\n");
                     text = textToHtml(text);
                 }
@@ -127,6 +127,10 @@ public class SearchModel {
 
     }
 
+
+    public Object[] getSavedTitles(){
+        return DataBase.getTitles().stream().sorted().toArray();
+    }
 
     public static String textToHtml(String text) {
 
@@ -142,5 +146,13 @@ public class SearchModel {
         builder.append("</font>");
 
         return builder.toString();
+    }
+
+    public String getSavedExtract(String selectedTitle) {
+        return DataBase.getExtract(selectedTitle);
+    }
+
+    public void updateSavedPage(String pageTitle, String pageExtract) {
+        DataBase.saveInfo(pageTitle, pageExtract);
     }
 }
