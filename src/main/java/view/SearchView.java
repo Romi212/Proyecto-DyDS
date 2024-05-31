@@ -51,18 +51,7 @@ public class SearchView {
     //Don't panic! We added several helpful comments to guide you through it ;)
 
     // From here on is where the magic happends: querying wikipedia, showing results, etc.
-    searchButton.addActionListener(e -> new Thread(() -> {
-              //This may take some time, dear user be patient in the meanwhile!
-              setWorkingStatus();
-              // get from service
-
-              presenter.searchSeries();
-
-
-
-              //Now you can keep searching stuff!
-              setWatingStatus();
-    }).start());
+    searchButton.addActionListener(e ->  { presenter.searchSeries();});
 
     saveLocallyButton.addActionListener(actionEvent -> {
       if(text != ""){
@@ -119,7 +108,9 @@ public class SearchView {
 
       });
       searchOptionsMenu.add(searchResult);
+      searchOptionsMenu.show(searchResultTextPane, searchResultTextPane.getX(), searchResultTextPane.getY());
     }
+    setWatingStatus();
   }
 
   public void showView(){
@@ -151,6 +142,7 @@ public class SearchView {
   }
 
   public void setSearchResultTextPane(String text) {
+    this.text = text;
     searchResultTextPane.setText(text);
     searchResultTextPane.setCaretPosition(0);
   }

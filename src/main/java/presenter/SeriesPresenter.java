@@ -12,6 +12,8 @@ public class SeriesPresenter {
     SearchModel model;
     SearchView view;
 
+    Thread taskThread;
+
     public SeriesPresenter(SearchModel model) {
         this.model = model;
         model.setPresenter(this);
@@ -31,10 +33,17 @@ public class SeriesPresenter {
     }
 
     public void searchSeries() {
-        String seriesName = view.getSeriesName();
 
-        //Controlar vacia
-        ArrayList<SearchResult> PagesFound = model.searchSeries(seriesName);
+        taskThread = new Thread(() -> {
+            String seriesName = view.getSeriesName();
+
+            //TODO: Controlar vacia
+            ArrayList<SearchResult> PagesFound = model.searchSeries(seriesName);
+
+            view.showResults(PagesFound);
+        });
+
+        taskThread.start();
 
     }
 
