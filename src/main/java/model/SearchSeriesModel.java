@@ -6,7 +6,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dyds.tvseriesinfo.fulllogic.DataBase;
 import utils.WikiPage;
-import dyds.tvseriesinfo.fulllogic.WikipediaPageAPI;
 import dyds.tvseriesinfo.fulllogic.WikipediaSearchAPI;
 import presenter.SeriesPresenter;
 import retrofit2.Response;
@@ -16,26 +15,30 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 
-public class SearchModel {
+public class SearchSeriesModel {
     private SeriesPresenter presenter;
 
     private WikipediaSearchAPI searchAPI;
 
-    private WikipediaPageAPI pageAPI;
+
 
     private Gson gson;
 
-    public SearchModel() {
+    private ArrayList<SearchSeriesModelListener> listeners = new ArrayList<>();
+
+    private ArrayList<WikiPage> searchResultsArray;
+
+
+
+
+    public SearchSeriesModel() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://en.wikipedia.org/w/")
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .build();
 
         searchAPI = retrofit.create(WikipediaSearchAPI.class);
-        pageAPI = retrofit.create(WikipediaPageAPI.class);
 
         gson = new Gson();
     }
@@ -44,10 +47,16 @@ public class SearchModel {
         this.presenter = presenter;
     }
 
-    public ArrayList<WikiPage> searchSeries(String seriesName) {
+    private void notifySeiesSearchFinishedListener() {
+        for (SearchSeriesModelListener listener: listeners) {
+            listener.seriesSearchFinished();
+        }
+    }
+
+    public void searchSeries(String seriesName) {
 
         Response<String> searchResponse;
-        ArrayList<WikiPage> searchResultsArray = new ArrayList<>();
+        searchResultsArray = new ArrayList<>();
         try {
 
             //ToAlberto: First, lets search for the term in Wikipedia
@@ -87,72 +96,18 @@ public class SearchModel {
         } catch (IOException e1) {
             e1.printStackTrace();
         }
+        notifySeiesSearchFinishedListener();
 
+    }
+
+    public ArrayList<WikiPage> getSearchResults() {
         return searchResultsArray;
     }
 
-    public String searchPageExtract(WikiPage wikiPage){
-            String text = "";
-            try {
-                //This may take some time, dear user be patient in the meanwhile!
-                //setWorkingStatus();
-                //Now fetch the info of the select page
-                Response<String> callForPageResponse = pageAPI.getExtractByPageID(wikiPage.getPageID()).execute();
-
-                System.out.println("JSON " + callForPageResponse.body());
-
-                //toAlberto: This is similar to the code above, but here we parse the wikipage answer.
-                //For more details on Gson look for very important coment 1, or just google it :P
-                JsonObject jsonPageResponse = gson.fromJson(callForPageResponse.body(), JsonObject.class);
-                JsonObject jsonPageQuery = jsonPageResponse.get("query").getAsJsonObject();
-                JsonObject jsonPagesFound = jsonPageQuery.get("pages").getAsJsonObject();
-                Set<Map.Entry<String, JsonElement>> pagesFoundSet = jsonPagesFound.entrySet();
-                Map.Entry<String, JsonElement> firstPageFound = pagesFoundSet.iterator().next();
-                JsonObject pageFound = firstPageFound.getValue().getAsJsonObject();
-                JsonElement jsonPageExtract = pageFound.get("extract");
-                if (jsonPageExtract == null) {
-                    text = "No Results";
-                } else {
-                    text = "<h1>" + wikiPage.getTitle() + "</h1>";
-                    text += jsonPageExtract.getAsString().replace("\\n", "\n");
-                    text = textToHtml(text);
-                }
 
 
-            } catch (Exception e12) {
-                System.out.println(e12.getMessage());
-            }
-
-            return text;
-
-    }
 
 
-    public Object[] getSavedTitles(){
-        return DataBase.getTitles().stream().sorted().toArray();
-    }
 
-    public static String textToHtml(String text) {
-
-        StringBuilder builder = new StringBuilder();
-
-        builder.append("<font face=\"arial\">");
-
-        String fixedText = text
-                .replace("'", "`"); //Replace to avoid SQL errors, we will have to find a workaround..
-
-        builder.append(fixedText);
-
-        builder.append("</font>");
-
-        return builder.toString();
-    }
-
-    public String getSavedExtract(String selectedTitle) {
-        return DataBase.getExtract(selectedTitle);
-    }
-
-    public void updateSavedPage(String pageTitle, String pageExtract) {
-        DataBase.saveInfo(pageTitle, pageExtract);
-    }
+    public void addListener(SearchSeriesModelListener listener) { this.listeners.add(listener);    }
 }

@@ -1,11 +1,13 @@
 package presenter;
 
-import model.SearchModel;
+import model.SearchSeriesModel;
+import model.SearchWikiPageModel;
 
 public class Main {
     public static void main(String[] args) {
-        SearchModel model = new SearchModel();
-        SeriesPresenter presenter = new SeriesPresenter(model);
+        SearchSeriesModel searchModel = new SearchSeriesModel();
+        SearchWikiPageModel wikiModel = new SearchWikiPageModel();
+        SeriesPresenter presenter = new SeriesPresenter(searchModel, wikiModel);
         presenter.start();
     }
 }
