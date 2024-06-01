@@ -1,9 +1,11 @@
 package presenter;
 
-import dyds.tvseriesinfo.fulllogic.DataBase;
 import model.*;
 import utils.WikiPage;
 import view.SearchView;
+import view.SearcherView;
+import view.StoredView;
+import view.TVSeriesSearcherView;
 
 public class SeriesPresenter {
 
@@ -12,7 +14,9 @@ public class SeriesPresenter {
     SearchWikiPageModel wikiPageModel;
 
     DataBaseModel dataBaseModel;
-    SearchView view;
+    SearcherView searchView;
+
+    StoredView storedView;
 
     Thread taskThread;
 
@@ -24,7 +28,13 @@ public class SeriesPresenter {
     }
 
     public void start(){
-        view = new SearchView(this);
+        TVSeriesSearcherView view = new TVSeriesSearcherView(this);
+
+        searchView = view.getSearchView();
+        searchView.setUpView();
+
+        storedView = view.getStoredView();
+        storedView.setUpView();
         view.showView();
 
 
@@ -46,18 +56,18 @@ public class SeriesPresenter {
     }
 
     private void showSeriesSearchResults(){
-        view.showResults(seriesSearchModel.getSearchResults());
-        view.setWatingStatus();
+        searchView.showResults(seriesSearchModel.getSearchResults());
+        searchView.setWatingStatus();
     }
 
     private void showExtractSearchResults(){
-        view.setSearchResultTextPane(wikiPageModel.getExtract());
+        searchView.setSearchResultTextPane(wikiPageModel.getExtract());
     }
     public void searchSeries() {
 
         taskThread = new Thread(() -> {
-            view.setWorkingStatus();
-            String seriesName = view.getSeriesName();
+            searchView.setWorkingStatus();
+            String seriesName = searchView.getSeriesName();
 
             //TODO: Controlar vacia
             seriesSearchModel.searchSeries(seriesName);
@@ -76,18 +86,18 @@ public class SeriesPresenter {
     }
 
     public void initializeSavedPanel(){
-        view.setSelectSavedComboBox(dataBaseModel.getSavedTitles());
+        storedView.setSelectSavedComboBox(dataBaseModel.getSavedTitles());
     }
 
     public void showSelectedExtract(){
         taskThread = new Thread(() -> {
-            view.setWorkingStatus();
+            searchView.setWorkingStatus();
             System.out.println("ENTRE");
-            String selectedTitle = view.getSeletedSavedTitle();
+            String selectedTitle = storedView.getSeletedSavedTitle();
             String selectedExtract = dataBaseModel.getSavedExtract(selectedTitle);
             System.out.println(selectedTitle+selectedExtract);
-            view.setSelectedExtract(textToHtml(selectedExtract));
-            view.setWatingStatus();
+            storedView.setSelectedExtract(textToHtml(selectedExtract));
+            searchView.setWatingStatus();
         });
         //TODO: TERMINAR HILO???
         taskThread.start();
@@ -111,16 +121,16 @@ public class SeriesPresenter {
     }
 
     public void deleteSelectedExtract() {
-        if(view.existSelectedEntry()){
-            String selectedTitle = view.getSeletedSavedTitle();
+        if(storedView.existSelectedEntry()){
+            String selectedTitle = storedView.getSeletedSavedTitle();
             dataBaseModel.deleteSavedPage(selectedTitle);
-            view.setSelectSavedComboBox(dataBaseModel.getSavedTitles());
-            view.emptySavedTextPane();
+            storedView.setSelectSavedComboBox(dataBaseModel.getSavedTitles());
+            storedView.emptySavedTextPane();
         }
     }
 
     public void saveExtractChanges() {
-        dataBaseModel.updateSavedPage(view.getSeletedSavedTitle().replace("'", "`"), view.getSelectedSavedExtract());
+        dataBaseModel.updateSavedPage(storedView.getSeletedSavedTitle().replace("'", "`"), storedView.getSelectedSavedExtract());
 
 
     }

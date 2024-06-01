@@ -21,7 +21,11 @@ public class SearchView {
   private JPanel searchPanel;
   private JPanel storagePanel;
   private JComboBox selectSavedComboBox;
+
   private JTextPane showSavedTextPane;
+
+  private LocallySavedView locallySavedView;
+
 
   DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
   String selectedResultTitle = null; //For storage purposes, it may not coincide with the searched term (see below)
@@ -31,6 +35,8 @@ public class SearchView {
   public SearchView( SeriesPresenter presenter) {
 
     this.presenter = presenter;
+
+    this.locallySavedView = new LocallySavedView();
 
   }
 
@@ -50,7 +56,7 @@ public class SearchView {
 
     setUpComboBox();
 
-    showSavedTextPane.setContentType("text/html");
+    showSavedTextPane = locallySavedView.getShowSavedTextPane();
 
     setUpPopupMenu();
 
@@ -68,7 +74,9 @@ public class SearchView {
     saveItem.addActionListener(actionEvent -> { presenter.saveExtractChanges();  });
     storedInfoPopup.add(saveItem);
 
-    showSavedTextPane.setComponentPopupMenu(storedInfoPopup);
+
+    locallySavedView.addPopup(storedInfoPopup);
+
   }
 
   private void setUpComboBox() {
