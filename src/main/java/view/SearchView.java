@@ -24,7 +24,6 @@ public class SearchView {
 
   private JTextPane showSavedTextPane;
 
-  private LocallySavedView locallySavedView;
 
 
   DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
@@ -36,7 +35,6 @@ public class SearchView {
 
     this.presenter = presenter;
 
-    this.locallySavedView = new LocallySavedView();
 
   }
 
@@ -56,7 +54,7 @@ public class SearchView {
 
     setUpComboBox();
 
-    showSavedTextPane = locallySavedView.getShowSavedTextPane();
+
 
     setUpPopupMenu();
 
@@ -75,7 +73,7 @@ public class SearchView {
     storedInfoPopup.add(saveItem);
 
 
-    locallySavedView.addPopup(storedInfoPopup);
+    //locallySavedView.addPopup(storedInfoPopup);
 
   }
 
