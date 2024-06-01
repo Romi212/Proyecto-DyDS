@@ -28,6 +28,13 @@ public class SearchModel {
 
     private Gson gson;
 
+    private ArrayList<SearchModelListener> listeners = new ArrayList<>();
+
+    private ArrayList<WikiPage> searchResultsArray;
+
+    private String extract;
+
+
     public SearchModel() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://en.wikipedia.org/w/")
@@ -44,10 +51,20 @@ public class SearchModel {
         this.presenter = presenter;
     }
 
-    public ArrayList<WikiPage> searchSeries(String seriesName) {
+    private void notifySeiesSearchFinishedListener() {
+        for (SearchModelListener listener: listeners) {
+            listener.seriesSearchFinished();
+        }
+    }
+    private void notifyExtractSearchFinishedListener() {
+        for (SearchModelListener listener: listeners) {
+            listener.extractSearchFinished();
+        }
+    }
+    public void searchSeries(String seriesName) {
 
         Response<String> searchResponse;
-        ArrayList<WikiPage> searchResultsArray = new ArrayList<>();
+        searchResultsArray = new ArrayList<>();
         try {
 
             //ToAlberto: First, lets search for the term in Wikipedia
@@ -87,12 +104,16 @@ public class SearchModel {
         } catch (IOException e1) {
             e1.printStackTrace();
         }
+        notifySeiesSearchFinishedListener();
 
+    }
+
+    public ArrayList<WikiPage> getSearchResults() {
         return searchResultsArray;
     }
 
-    public String searchPageExtract(WikiPage wikiPage){
-            String text = "";
+    public void searchPageExtract(WikiPage wikiPage){
+            extract = "";
             try {
                 //This may take some time, dear user be patient in the meanwhile!
                 //setWorkingStatus();
@@ -111,11 +132,11 @@ public class SearchModel {
                 JsonObject pageFound = firstPageFound.getValue().getAsJsonObject();
                 JsonElement jsonPageExtract = pageFound.get("extract");
                 if (jsonPageExtract == null) {
-                    text = "No Results";
+                    extract = "No Results";
                 } else {
-                    text = "<h1>" + wikiPage.getTitle() + "</h1>";
-                    text += jsonPageExtract.getAsString().replace("\\n", "\n");
-                    text = textToHtml(text);
+                    extract = "<h1>" + wikiPage.getTitle() + "</h1>";
+                    extract += jsonPageExtract.getAsString().replace("\\n", "\n");
+                    extract = textToHtml(extract);
                 }
 
 
@@ -123,8 +144,13 @@ public class SearchModel {
                 System.out.println(e12.getMessage());
             }
 
-            return text;
+            notifyExtractSearchFinishedListener();
 
+
+    }
+
+    public String getExtract(){
+        return extract;
     }
 
 
@@ -155,4 +181,6 @@ public class SearchModel {
     public void updateSavedPage(String pageTitle, String pageExtract) {
         DataBase.saveInfo(pageTitle, pageExtract);
     }
+
+    public void addListener(SearchModelListener listener) { this.listeners.add(listener);    }
 }

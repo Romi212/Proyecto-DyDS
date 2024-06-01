@@ -1,6 +1,7 @@
 package presenter;
 
 import dyds.tvseriesinfo.fulllogic.DataBase;
+import model.SearchModelListener;
 import utils.WikiPage;
 import model.SearchModel;
 import view.SearchView;
@@ -24,8 +25,29 @@ public class SeriesPresenter {
         view.showView();
 
         DataBase.loadDatabase();
+        initListeners();
     }
 
+    private void initListeners(){
+        model.addListener(new SearchModelListener() {
+            @Override public void seriesSearchFinished() {
+                showSeriesSearchResults();
+            }
+
+            @Override public void extractSearchFinished() {
+                showExtractSearchResults();
+            }
+        });
+    }
+
+    private void showSeriesSearchResults(){
+        view.showResults(model.getSearchResults());
+        view.setWatingStatus();
+    }
+
+    private void showExtractSearchResults(){
+        view.setSearchResultTextPane(model.getExtract());
+    }
     public void searchSeries() {
 
         taskThread = new Thread(() -> {
@@ -33,10 +55,10 @@ public class SeriesPresenter {
             String seriesName = view.getSeriesName();
 
             //TODO: Controlar vacia
-            ArrayList<WikiPage> PagesFound = model.searchSeries(seriesName);
+            model.searchSeries(seriesName);
 
-            view.showResults(PagesFound);
-            view.setWatingStatus();
+
+
         });
         //TODO: TERMINAR HILO???
         taskThread.start();
@@ -44,8 +66,8 @@ public class SeriesPresenter {
     }
 
     public void getSelectedExtract(WikiPage selectedResult){
-        String extract = model.searchPageExtract(selectedResult);
-        view.setSearchResultTextPane(extract);
+        model.searchPageExtract(selectedResult);
+
     }
 
     public void initializeSavedPanel(){
