@@ -1,39 +1,44 @@
 package presenter;
 
 import dyds.tvseriesinfo.fulllogic.DataBase;
-import model.SearchModelListener;
+import model.*;
 import utils.WikiPage;
-import model.SearchModel;
 import view.SearchView;
-
-import java.util.ArrayList;
 
 public class SeriesPresenter {
 
-    SearchModel model;
+    SearchSeriesModel seriesSearchModel;
+
+    SearchWikiPageModel wikiPageModel;
+
+    DataBaseModel dataBaseModel;
     SearchView view;
 
     Thread taskThread;
 
-    public SeriesPresenter(SearchModel model) {
-        this.model = model;
-        model.setPresenter(this);
+    public SeriesPresenter(SearchSeriesModel seriesSearchModel, SearchWikiPageModel wikiPageModel, DataBaseModel dataBaseModel) {
+        this.seriesSearchModel = seriesSearchModel;
+        this.wikiPageModel = wikiPageModel;
+        this.dataBaseModel = dataBaseModel;
+        seriesSearchModel.setPresenter(this);
     }
 
     public void start(){
         view = new SearchView(this);
         view.showView();
 
-        DataBase.loadDatabase();
+
         initListeners();
     }
 
     private void initListeners(){
-        model.addListener(new SearchModelListener() {
+        seriesSearchModel.addListener(new SearchSeriesModelListener() {
             @Override public void seriesSearchFinished() {
                 showSeriesSearchResults();
             }
+        });
 
+        wikiPageModel.addListener(new SearchWikiPageModelListener() {
             @Override public void extractSearchFinished() {
                 showExtractSearchResults();
             }
@@ -41,12 +46,12 @@ public class SeriesPresenter {
     }
 
     private void showSeriesSearchResults(){
-        view.showResults(model.getSearchResults());
+        view.showResults(seriesSearchModel.getSearchResults());
         view.setWatingStatus();
     }
 
     private void showExtractSearchResults(){
-        view.setSearchResultTextPane(model.getExtract());
+        view.setSearchResultTextPane(wikiPageModel.getExtract());
     }
     public void searchSeries() {
 
@@ -55,7 +60,7 @@ public class SeriesPresenter {
             String seriesName = view.getSeriesName();
 
             //TODO: Controlar vacia
-            model.searchSeries(seriesName);
+            seriesSearchModel.searchSeries(seriesName);
 
 
 
@@ -66,12 +71,12 @@ public class SeriesPresenter {
     }
 
     public void getSelectedExtract(WikiPage selectedResult){
-        model.searchPageExtract(selectedResult);
+        wikiPageModel.searchPageExtract(selectedResult);
 
     }
 
     public void initializeSavedPanel(){
-        view.setSelectSavedComboBox(model.getSavedTitles());
+        view.setSelectSavedComboBox(dataBaseModel.getSavedTitles());
     }
 
     public void showSelectedExtract(){
@@ -79,7 +84,7 @@ public class SeriesPresenter {
             view.setWorkingStatus();
             System.out.println("ENTRE");
             String selectedTitle = view.getSeletedSavedTitle();
-            String selectedExtract = model.getSavedExtract(selectedTitle);
+            String selectedExtract = dataBaseModel.getSavedExtract(selectedTitle);
             System.out.println(selectedTitle+selectedExtract);
             view.setSelectedExtract(textToHtml(selectedExtract));
             view.setWatingStatus();
@@ -108,14 +113,14 @@ public class SeriesPresenter {
     public void deleteSelectedExtract() {
         if(view.existSelectedEntry()){
             String selectedTitle = view.getSeletedSavedTitle();
-            DataBase.deleteEntry(selectedTitle);
-            view.setSelectSavedComboBox(model.getSavedTitles());
+            dataBaseModel.deleteSavedPage(selectedTitle);
+            view.setSelectSavedComboBox(dataBaseModel.getSavedTitles());
             view.emptySavedTextPane();
         }
     }
 
     public void saveExtractChanges() {
-        model.updateSavedPage(view.getSeletedSavedTitle().replace("'", "`"), view.getSelectedSavedExtract());
+        dataBaseModel.updateSavedPage(view.getSeletedSavedTitle().replace("'", "`"), view.getSelectedSavedExtract());
 
 
     }
