@@ -14,7 +14,7 @@ import java.util.Set;
 
 import static utils.TextProcessing.textToHtml;
 
-public class SearchPageAPI {
+public class SearchPageAPI implements SearchPageAPInterface {
     private WikipediaPageAPI pageAPI;
     private Gson gson;
 
@@ -29,6 +29,7 @@ public class SearchPageAPI {
         gson = new Gson();
     }
 
+    @Override
     public String getExtract(WikiPage wikiPage){
         String extract = "";
         try {

@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dyds.tvseriesinfo.fulllogic.DataBase;
 import model.APIs.SearchSeriesAPI;
+import model.APIs.SearchSeriesAPInterface;
 import utils.WikiPage;
 import dyds.tvseriesinfo.fulllogic.WikipediaSearchAPI;
 import presenter.SeriesPresenter;
@@ -20,7 +21,7 @@ import java.util.Iterator;
 public class SearchSeriesModel {
     private SeriesPresenter presenter;
 
-    SearchSeriesAPI searchAPI;
+    SearchSeriesAPInterface searchAPI;
 
 
 
@@ -33,9 +34,10 @@ public class SearchSeriesModel {
 
 
 
-    public SearchSeriesModel() {
+    public SearchSeriesModel(SearchSeriesAPInterface searchAPI
 
-    searchAPI = new SearchSeriesAPI();
+    ) {
+        this.searchAPI = searchAPI;
 
     }
 

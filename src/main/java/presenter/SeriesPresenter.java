@@ -134,4 +134,16 @@ public class SeriesPresenter {
 
 
     }
+
+    public void recordScore() {
+        int score = searchView.getScore();
+        dataBaseModel.setScore(searchView.getSeriesName(), score);
+    }
+
+    public void searchScore() {
+        String seriesName = searchView.getSeriesName();
+        Integer score = dataBaseModel.getScore(seriesName);
+        if( score == null) searchView.setScore(0);
+        else searchView.setScore(score);
+    }
 }

@@ -1,10 +1,11 @@
 package view;
 
-import dyds.tvseriesinfo.fulllogic.DataBase;
 import presenter.SeriesPresenter;
 import utils.WikiPage;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -14,6 +15,7 @@ public class SearcherView {
     private JButton searchButton;
     private JTextPane searchResultTextPane;
     private JButton saveLocallyButton;
+    private JSlider scoreSlideBar;
     private SeriesPresenter presenter;
     String selectedResultTitle = null; //For storage purposes, it may not coincide with the searched term (see below)
     String text = ""; //Last searched text! this variable is central for everything
@@ -29,6 +31,7 @@ public class SearcherView {
         public void setUpView() {
             searchResultTextPane.setContentType("text/html");
             searchButton.addActionListener(e ->  { presenter.searchSeries();});
+            scoreSlideBar.setVisible(false);
             saveLocallyButton.addActionListener(actionEvent -> {
                 if(text != ""){
                     // save to DB  <o/
@@ -36,9 +39,24 @@ public class SearcherView {
                     //selectSavedComboBox.setModel(new DefaultComboBoxModel(DataBase.getTitles().stream().sorted().toArray()));
                 }
             });
+
+            scoreSlideBar.addChangeListener(new ChangeListener() {
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    JSlider source = (JSlider)e.getSource();
+                    if (!source.getValueIsAdjusting()) {
+
+                        // Call the presenter method with the new score
+                        presenter.recordScore();
+                    }
+                }
+            });
         }
 
 
+        public int getScore(){
+            return scoreSlideBar.getValue();
+        }
         public void setWorkingStatus() {
             for(Component c: this.searchPanel.getComponents()) c.setEnabled(false);
             searchResultTextPane.setEnabled(false);
@@ -68,12 +86,23 @@ public class SearcherView {
             this.text = text;
             searchResultTextPane.setText(text);
             searchResultTextPane.setCaretPosition(0);
+            //TODO cambiar esto de lugar
+            showScore();
+
         }
 
+    private void showScore(){
+        scoreSlideBar.setVisible(true);
+        presenter.searchScore();
+    }
     public String getSeriesName() {
         return searchTextField.getText();
     }
     public Component getContentPane() {
         return searchPanel;
+    }
+
+    public void setScore(int i) {
+        scoreSlideBar.setValue(i);
     }
 }

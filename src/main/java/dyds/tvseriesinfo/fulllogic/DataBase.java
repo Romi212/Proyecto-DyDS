@@ -22,6 +22,8 @@ public class DataBase {
         //statement.executeUpdate("create table catalog (id INTEGER PRIMARY KEY AUTOINCREMENT, title string, extract string, source integer)");
         statement.executeUpdate("create table catalog (id INTEGER, title string PRIMARY KEY, extract string, source integer)");
         //If the DB was created before, a SQL error is reported but it is not harmfull...
+
+        statement.executeUpdate("create table scores (id INTEGER, title string PRIMARY KEY, score integer)");
       }
 
     } catch (SQLException e) {
@@ -74,6 +76,75 @@ public class DataBase {
         System.err.println(e);
       }
     }
+  }
+
+  public static void saveScore(String title, int score)
+  {
+    Connection connection = null;
+    try
+    {
+      // create a database connection
+      connection = DriverManager.getConnection("jdbc:sqlite:./dictionary.db");
+
+      Statement statement = connection.createStatement();
+      statement.setQueryTimeout(30);  // set timeout to 30 sec.
+
+      System.out.println("INSERT  " + title + "', '"+ score);
+
+      statement.executeUpdate("replace into scores values(null, '"+ title + "', "+ score + ")");
+    }
+    catch(SQLException e)
+    {
+      System.err.println("Error saving " + e.getMessage());
+    }
+    finally
+    {
+      try
+      {
+        if(connection != null)
+          connection.close();
+      }
+      catch(SQLException e)
+      {
+        // connection close failed.
+        System.err.println( e);
+      }
+    }
+  }
+  public static int getScore(String title)
+  {
+    Connection connection = null;
+    try
+    {
+      // create a database connection
+      connection = DriverManager.getConnection("jdbc:sqlite:./dictionary.db");
+      Statement statement = connection.createStatement();
+      statement.setQueryTimeout(30);  // set timeout to 30 sec.
+
+      ResultSet rs = statement.executeQuery("select * from scores WHERE title = '" + title + "'" );
+      rs.next();
+      return rs.getInt("score");
+    }
+    catch(SQLException e)
+    {
+      // if the error message is "out of memory",
+      // it probably means no database file is found
+      System.err.println("Get title error " + e.getMessage());
+    }
+    finally
+    {
+      try
+      {
+        if(connection != null)
+          connection.close();
+      }
+      catch(SQLException e)
+      {
+        // connection close failed.
+        System.err.println(e);
+      }
+    }
+    return 0;
   }
 
   public static ArrayList<String> getTitles()

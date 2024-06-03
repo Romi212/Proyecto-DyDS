@@ -5,6 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dyds.tvseriesinfo.fulllogic.WikipediaPageAPI;
 import model.APIs.SearchPageAPI;
+import model.APIs.SearchPageAPInterface;
+import model.APIs.SearchSeriesAPI;
 import presenter.SeriesPresenter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -25,12 +27,14 @@ public class SearchWikiPageModel {
 
 
     private ArrayList<SearchWikiPageModelListener> listeners = new ArrayList<>();
-    private SearchPageAPI pageAPI;
+    private SearchPageAPInterface pageAPI;
 
     private SeriesPresenter presenter;
 
-    public SearchWikiPageModel() {
-        pageAPI = new SearchPageAPI();
+    public SearchWikiPageModel(SearchPageAPInterface pageAPI
+
+        ) {
+            this.pageAPI = pageAPI;
     }
 
     public void setPresenter(SeriesPresenter presenter) {

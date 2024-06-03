@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class SearchSeriesAPI {
+public class SearchSeriesAPI implements SearchSeriesAPInterface {
 
     private WikipediaSearchAPI searchAPI;
     private Gson gson;
@@ -31,6 +31,7 @@ public class SearchSeriesAPI {
         gson = new Gson();
     }
 
+    @Override
     public ArrayList<WikiPage> searchSeries(String seriesName) {
         Response<String> searchResponse;
         ArrayList<WikiPage> searchResultsArray = new ArrayList<>();

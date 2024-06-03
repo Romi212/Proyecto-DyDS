@@ -24,4 +24,12 @@ public class DataBaseModel {
     public void updateSavedPage(String pageTitle, String pageExtract) {
         DataBase.saveInfo(pageTitle, pageExtract);
     }
+
+    public void setScore(String pageTitle, int score){
+        DataBase.saveScore(pageTitle, score);
+    }
+
+    public int getScore(String pageTitle){
+        return DataBase.getScore(pageTitle);
+    }
 }
