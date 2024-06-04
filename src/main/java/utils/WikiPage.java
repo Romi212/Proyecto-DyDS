@@ -1,6 +1,7 @@
 package utils;
 
 import javax.swing.*;
+import java.util.Date;
 
 public class WikiPage  {
 
@@ -8,6 +9,9 @@ public class WikiPage  {
     private String title;
     private String pageID;
     private String snippet;
+    private Date lastUpdated;
+    private String extract;
+    private int score;
 
     private JMenuItem graphicMenuItem;
 
@@ -42,5 +46,29 @@ public class WikiPage  {
 
     public JMenuItem getGraphicMenuItem() {
         return graphicMenuItem;
+    }
+
+    public void setScore(int score){
+        this.score = score;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(Date date) {
+        this.lastUpdated = date;
+    }
+
+    public void setExtract(String extract) {
+        this.extract = extract;
+    }
+
+    public String getExtract() {
+        return extract;
     }
 }

@@ -5,17 +5,20 @@ import presenter.SeriesPresenter;
 import javax.swing.*;
 import java.awt.*;
 
-public class TVSeriesSearcherView {
+public class TVSeriesSearcherWindow {
     private JTabbedPane tabbedPane;
     private JPanel contentPane;
+
+    private ScoredView scoredView;
 
     private StoredView storedView;
 
     private SearcherView searcherView;
 
-    public TVSeriesSearcherView(SeriesPresenter presenter) {
+    public TVSeriesSearcherWindow(SeriesPresenter presenter) {
         storedView = new StoredView(presenter);
         searcherView = new SearcherView(presenter);
+        scoredView = new ScoredView(presenter);
 
     }
     public void showView(){
@@ -27,6 +30,7 @@ public class TVSeriesSearcherView {
 
         tabbedPane.addTab("Search", searcherView.getContentPane());
         tabbedPane.addTab("Stored", storedView.getContentPane());
+        tabbedPane.addTab("Scored", scoredView.getContentPane());
 
        // setUpSavedPanel();
 
@@ -53,5 +57,11 @@ public class TVSeriesSearcherView {
 
     public StoredView getStoredView() {
         return storedView;
+    }
+
+    public ScoredView getScoredView() { return scoredView; }
+
+    public void showSearchPanel() {
+        tabbedPane.setSelectedIndex(0);
     }
 }

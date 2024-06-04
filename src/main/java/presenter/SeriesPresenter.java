@@ -2,10 +2,12 @@ package presenter;
 
 import model.*;
 import utils.WikiPage;
-import view.SearchView;
+import view.ScoredView;
 import view.SearcherView;
 import view.StoredView;
-import view.TVSeriesSearcherView;
+import view.TVSeriesSearcherWindow;
+
+import java.util.ArrayList;
 
 public class SeriesPresenter {
 
@@ -18,7 +20,11 @@ public class SeriesPresenter {
 
     StoredView storedView;
 
+    ScoredView scoredView;
+
     Thread taskThread;
+
+    TVSeriesSearcherWindow mainWindow;
 
     public SeriesPresenter(SearchSeriesModel seriesSearchModel, SearchWikiPageModel wikiPageModel, DataBaseModel dataBaseModel) {
         this.seriesSearchModel = seriesSearchModel;
@@ -28,14 +34,17 @@ public class SeriesPresenter {
     }
 
     public void start(){
-        TVSeriesSearcherView view = new TVSeriesSearcherView(this);
+        mainWindow = new TVSeriesSearcherWindow(this);
 
-        searchView = view.getSearchView();
+        searchView = mainWindow.getSearchView();
         searchView.setUpView();
 
-        storedView = view.getStoredView();
+        storedView = mainWindow.getStoredView();
         storedView.setUpView();
-        view.showView();
+
+        scoredView = mainWindow.getScoredView();
+        scoredView.setUpView();
+        mainWindow.showView();
 
 
         initListeners();
@@ -62,6 +71,7 @@ public class SeriesPresenter {
 
     private void showExtractSearchResults(){
         searchView.setSearchResultTextPane(wikiPageModel.getExtract());
+
     }
     public void searchSeries() {
 
@@ -82,11 +92,20 @@ public class SeriesPresenter {
 
     public void getSelectedExtract(WikiPage selectedResult){
         wikiPageModel.searchPageExtract(selectedResult);
+        if(hasScore(selectedResult.getTitle())) searchScore(selectedResult.getTitle());
+        else searchView.showNoScore();
 
     }
 
     public void initializeSavedPanel(){
-        storedView.setSelectSavedComboBox(dataBaseModel.getSavedTitles());
+        Object[] seriesTitles = dataBaseModel.getSavedTitles();
+        Object[] seriesTItlesScored = new Object[seriesTitles.length];
+        for(int i = 0; i < seriesTitles.length; i++){
+            if(hasScore((String) seriesTitles[i])) seriesTItlesScored[i] = seriesTitles[i] + " - Scored";
+            else
+            seriesTItlesScored[i] = seriesTitles[i];
+        }
+        storedView.setSelectSavedComboBox(seriesTItlesScored);
     }
 
     public void showSelectedExtract(){
@@ -129,21 +148,54 @@ public class SeriesPresenter {
         }
     }
 
-    public void saveExtractChanges() {
-        dataBaseModel.updateSavedPage(storedView.getSeletedSavedTitle().replace("'", "`"), storedView.getSelectedSavedExtract());
 
-
-    }
 
     public void recordScore() {
         int score = searchView.getScore();
-        dataBaseModel.setScore(searchView.getSeriesName(), score);
+        WikiPage series = searchView.getLastSearchedSeries();
+        series.setScore(score);
+        dataBaseModel.setScore(series);
     }
 
-    public void searchScore() {
-        String seriesName = searchView.getSeriesName();
-        Integer score = dataBaseModel.getScore(seriesName);
-        if( score == null) searchView.setScore(0);
-        else searchView.setScore(score);
+    private boolean hasScore(String seriesName){
+        return dataBaseModel.getScore(seriesName) != -1;
+    }
+    public void searchScore( String seriesName) {
+        searchView.showScore();
+        int score = dataBaseModel.getScore(seriesName);
+        searchView.setScore(score);
+    }
+
+    public void getSavedScores() {
+        ArrayList<WikiPage> scoredSeries = dataBaseModel.getScoredSeries();
+        scoredView.showSavedScores(scoredSeries);
+    }
+
+    public void onRowSelected() {
+        WikiPage selectedSeries = scoredView.getSelectedSeries();
+        searchView.setLastSearchedSeries(selectedSeries);
+        getSelectedExtract(selectedSeries);
+
+        mainWindow.showSearchPanel();
+
+    }
+
+    public void setScore() {
+        searchView.showScore();
+    }
+
+    public void saveExtractChanges() {
+        updateStoredExtract(storedView.getSeletedSavedTitle(), storedView.getSelectedSavedExtract());
+
+
+    }
+    public void saveLocally() {
+
+        WikiPage pageToSave = searchView.getLastSearchedSeries();
+        if(pageToSave != null) updateStoredExtract(pageToSave.getTitle(), pageToSave.getExtract());
+    }
+    private void updateStoredExtract(String title, String extract){
+        dataBaseModel.updateSavedPage(title.replace("'", "`"), extract);
+
     }
 }

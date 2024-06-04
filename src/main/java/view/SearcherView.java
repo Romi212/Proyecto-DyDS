@@ -16,7 +16,11 @@ public class SearcherView {
     private JTextPane searchResultTextPane;
     private JButton saveLocallyButton;
     private JSlider scoreSlideBar;
+    private JButton setScoreButton;
+    private JLabel noScoreFoundLabel;
+    private JPanel noScorePanel;
     private SeriesPresenter presenter;
+    WikiPage lastSearchedSeries;
     String selectedResultTitle = null; //For storage purposes, it may not coincide with the searched term (see below)
     String text = ""; //Last searched text! this variable is central for everything
 
@@ -32,14 +36,17 @@ public class SearcherView {
             searchResultTextPane.setContentType("text/html");
             searchButton.addActionListener(e ->  { presenter.searchSeries();});
             scoreSlideBar.setVisible(false);
+            noScorePanel.setVisible(false);
+
             saveLocallyButton.addActionListener(actionEvent -> {
-                if(text != ""){
-                    // save to DB  <o/
-                  //  DataBase.saveInfo(selectedResultTitle.replace("'", "`"), text);  //Dont forget the ' sql problem
-                    //selectSavedComboBox.setModel(new DefaultComboBoxModel(DataBase.getTitles().stream().sorted().toArray()));
-                }
+                presenter.saveLocally();
             });
 
+            setScoreButton.addActionListener(e -> {
+                // Call the presenter method to set the score
+                // You need to implement this method in the presenter
+                presenter.setScore();
+            });
             scoreSlideBar.addChangeListener(new ChangeListener() {
                 @Override
                 public void stateChanged(ChangeEvent e) {
@@ -72,6 +79,7 @@ public class SearcherView {
             for(WikiPage wikiPage : wikiPages){
                 wikiPage.getGraphicMenuItem().addActionListener(actionEvent -> {
                     selectedResultTitle = wikiPage.getTitle();
+                    lastSearchedSeries = wikiPage;
                     presenter.getSelectedExtract(wikiPage);
 
                 });
@@ -83,17 +91,17 @@ public class SearcherView {
 
 
         public void setSearchResultTextPane(String text) {
-            this.text = text;
+            lastSearchedSeries.setExtract(text);
             searchResultTextPane.setText(text);
             searchResultTextPane.setCaretPosition(0);
             //TODO cambiar esto de lugar
-            showScore();
 
         }
 
-    private void showScore(){
+    public void showScore(){
         scoreSlideBar.setVisible(true);
-        presenter.searchScore();
+        noScorePanel.setVisible(false);
+
     }
     public String getSeriesName() {
         return searchTextField.getText();
@@ -104,5 +112,21 @@ public class SearcherView {
 
     public void setScore(int i) {
         scoreSlideBar.setValue(i);
+    }
+
+    public WikiPage getLastSearchedSeries() {
+
+        return lastSearchedSeries;
+    }
+
+
+    public void setLastSearchedSeries(WikiPage lastSearchedSeries) {
+        this.lastSearchedSeries = lastSearchedSeries;
+    }
+    public void showNoScore() {
+        scoreSlideBar.setVisible(false);
+
+        // Show the JLabel and JButton
+        noScorePanel.setVisible(true);
     }
 }

@@ -1,6 +1,9 @@
 package model;
 
 import dyds.tvseriesinfo.fulllogic.DataBase;
+import utils.WikiPage;
+
+import java.util.ArrayList;
 
 public class DataBaseModel {
 
@@ -25,11 +28,13 @@ public class DataBaseModel {
         DataBase.saveInfo(pageTitle, pageExtract);
     }
 
-    public void setScore(String pageTitle, int score){
-        DataBase.saveScore(pageTitle, score);
+    public void setScore(WikiPage series){
+        DataBase.saveScore(Integer.parseInt(series.getPageID()),series.getTitle(), series.getScore());
     }
 
     public int getScore(String pageTitle){
         return DataBase.getScore(pageTitle);
     }
+
+    public ArrayList<WikiPage> getScoredSeries() { return DataBase.getScoredSeries();    }
 }
