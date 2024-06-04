@@ -1,5 +1,7 @@
 package dyds.tvseriesinfo.fulllogic;
 
+import utils.WikiPage;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -19,11 +21,15 @@ public class DataBase {
         Statement statement = connection.createStatement();
         statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
+
+       // statement.executeUpdate("DROP TABLE IF EXISTS scores");
+       // statement.executeUpdate("DROP TABLE IF EXISTS catalog");
+
         //statement.executeUpdate("create table catalog (id INTEGER PRIMARY KEY AUTOINCREMENT, title string, extract string, source integer)");
-        statement.executeUpdate("create table catalog (id INTEGER, title string PRIMARY KEY, extract string, source integer)");
+        //statement.executeUpdate("create table catalog (id INTEGER, title string PRIMARY KEY, extract string, source integer)");
         //If the DB was created before, a SQL error is reported but it is not harmfull...
 
-        statement.executeUpdate("create table scores (id INTEGER, title string PRIMARY KEY, score integer)");
+       // statement.executeUpdate("create table scores (id INTEGER, title string PRIMARY KEY, score integer, lastUpdated DATETIME DEFAULT CURRENT_TIMESTAMP)");
       }
 
     } catch (SQLException e) {
@@ -78,7 +84,7 @@ public class DataBase {
     }
   }
 
-  public static void saveScore(String title, int score)
+  public static void saveScore(int id, String title, int score)
   {
     Connection connection = null;
     try
@@ -89,9 +95,9 @@ public class DataBase {
       Statement statement = connection.createStatement();
       statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
-      System.out.println("INSERT  " + title + "', '"+ score);
+      System.out.println("INSERT  " + title + ", "+ score);
 
-      statement.executeUpdate("replace into scores values(null, '"+ title + "', "+ score + ")");
+      statement.executeUpdate("replace into scores values( "+id+", '"+ title + "', "+ score + ", datetime('now'))");
     }
     catch(SQLException e)
     {
@@ -114,6 +120,7 @@ public class DataBase {
   public static int getScore(String title)
   {
     Connection connection = null;
+    int score = -1;
     try
     {
       // create a database connection
@@ -122,8 +129,12 @@ public class DataBase {
       statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
       ResultSet rs = statement.executeQuery("select * from scores WHERE title = '" + title + "'" );
-      rs.next();
-      return rs.getInt("score");
+      if (!rs.next()) {
+        System.out.println("No records found");
+      } else {
+        System.out.println(rs.getInt("score"));
+        score = rs.getInt("score");
+      }
     }
     catch(SQLException e)
     {
@@ -144,7 +155,7 @@ public class DataBase {
         System.err.println(e);
       }
     }
-    return 0;
+    return score;
   }
 
   public static ArrayList<String> getTitles()
@@ -290,4 +301,47 @@ public class DataBase {
   }
 
 
+  public static ArrayList<WikiPage> getScoredSeries() {
+
+    ArrayList<WikiPage> scoredSeries = new ArrayList<>();
+    Connection connection = null;
+
+    try
+    {
+      // create a database connection
+      connection = DriverManager.getConnection("jdbc:sqlite:./dictionary.db");
+      Statement statement = connection.createStatement();
+      statement.setQueryTimeout(30);  // set timeout to 30 sec.
+
+      ResultSet rs = statement.executeQuery("select * from scores" );
+      while (rs.next()) {
+        WikiPage series = new WikiPage( rs.getString("title"), String.valueOf(rs.getInt("id")),"");
+        series.setScore(rs.getInt("score"));
+        Timestamp timestamp = rs.getTimestamp("lastUpdated");
+        series.setLastUpdated(new java.util.Date(timestamp.getTime()));
+        System.out.println("Scored series: " + rs.getString("title"));
+        scoredSeries.add(series);
+      }
+    }
+    catch(SQLException e)
+    {
+      // if the error message is "out of memory",
+      // it probably means no database file is found
+      System.err.println("Get title error " + e.getMessage());
+    }
+    finally
+    {
+      try
+      {
+        if(connection != null)
+          connection.close();
+      }
+      catch(SQLException e)
+      {
+        // connection close failed.
+        System.err.println(e);
+      }
+    }
+    return scoredSeries;
+  }
 }
