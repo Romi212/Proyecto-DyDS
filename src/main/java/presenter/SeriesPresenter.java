@@ -7,6 +7,7 @@ import view.SearcherView;
 import view.StoredView;
 import view.TVSeriesSearcherWindow;
 
+import javax.swing.*;
 import java.util.ArrayList;
 
 public class SeriesPresenter {
@@ -70,7 +71,7 @@ public class SeriesPresenter {
     }
 
     private void showExtractSearchResults(){
-        searchView.setSearchResultTextPane(wikiPageModel.getExtract());
+        searchView.setSearchResultTextPane(wikiPageModel.getExtract() + wikiPageModel.getUrl() );
 
     }
     public void searchSeries() {
@@ -191,11 +192,35 @@ public class SeriesPresenter {
     }
     public void saveLocally() {
 
-        WikiPage pageToSave = searchView.getLastSearchedSeries();
-        if(pageToSave != null) updateStoredExtract(pageToSave.getTitle(), pageToSave.getExtract());
+        try{
+            WikiPage pageToSave = searchView.getLastSearchedSeries();
+            if(pageToSave != null) updateStoredExtract(pageToSave.getTitle(), pageToSave.getExtract());
+            mainWindow.showSuccessMessage(searchView.getContentPane(), "The series was correctly saved!","Success");
+
+        } catch(Exception e){
+            mainWindow.showErrorMessage(searchView.getContentPane(), e.getMessage(),"Error");
+
+        }
+
+
     }
     private void updateStoredExtract(String title, String extract){
         dataBaseModel.updateSavedPage(title.replace("'", "`"), extract);
 
+    }
+
+    public void changedTabs() {
+        int selectedTab = mainWindow.getSelectedTab();
+        switch (selectedTab){
+            case 0:
+                searchView.setWatingStatus();
+                break;
+            case 1:
+                initializeSavedPanel();
+                break;
+            case 2:
+                getSavedScores();
+                break;
+        }
     }
 }

@@ -11,6 +11,8 @@ public class WikiPage  {
     private String snippet;
     private Date lastUpdated;
     private String extract;
+
+    private String url;
     private int score;
 
     private JMenuItem graphicMenuItem;
@@ -34,6 +36,13 @@ public class WikiPage  {
 
     public String getSnippet() {
         return snippet;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     private void createMenuItem() {

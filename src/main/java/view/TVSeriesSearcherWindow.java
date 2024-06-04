@@ -3,6 +3,8 @@ package view;
 import presenter.SeriesPresenter;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 
 public class TVSeriesSearcherWindow {
@@ -15,10 +17,13 @@ public class TVSeriesSearcherWindow {
 
     private SearcherView searcherView;
 
+    private SeriesPresenter presenter;
+
     public TVSeriesSearcherWindow(SeriesPresenter presenter) {
         storedView = new StoredView(presenter);
         searcherView = new SearcherView(presenter);
         scoredView = new ScoredView(presenter);
+        this.presenter = presenter;
 
     }
     public void showView(){
@@ -33,6 +38,13 @@ public class TVSeriesSearcherWindow {
         tabbedPane.addTab("Scored", scoredView.getContentPane());
 
        // setUpSavedPanel();
+        tabbedPane.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+
+                presenter.changedTabs();
+            }
+        });
 
         try {
             // Set System L&F
@@ -63,5 +75,16 @@ public class TVSeriesSearcherWindow {
 
     public void showSearchPanel() {
         tabbedPane.setSelectedIndex(0);
+    }
+
+    public int getSelectedTab() {
+        return tabbedPane.getSelectedIndex();
+    }
+
+    public void showSuccessMessage(Component panel, String message, String title) {
+        JOptionPane.showMessageDialog(panel,message,title, JOptionPane.INFORMATION_MESSAGE);
+    }
+    public void showErrorMessage(Component panel, String message, String title) {
+        JOptionPane.showMessageDialog(panel, message, title, JOptionPane.ERROR_MESSAGE);
     }
 }

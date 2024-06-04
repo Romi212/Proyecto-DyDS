@@ -3,38 +3,80 @@ package model;
 import dyds.tvseriesinfo.fulllogic.DataBase;
 import utils.WikiPage;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class DataBaseModel {
 
+    private DataBase dataBase;
 
 
     public DataBaseModel(){
-        DataBase.loadDatabase();
+        try{
+            dataBase = new DataBase();
+            dataBase.loadDatabase();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Object[] getSavedTitles(){
-        return DataBase.getTitles().stream().sorted().toArray();
+        try{
+            return dataBase.getTitles().stream().sorted().toArray();
+        } catch (Exception e){
+            e.printStackTrace();}
+        return null;
     }
 
     public void deleteSavedPage(String selectedTitle) {
-        DataBase.deleteEntry(selectedTitle);
+        try{
+            dataBase.deleteEntry(selectedTitle);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
     public String getSavedExtract(String selectedTitle) {
-        return DataBase.getExtract(selectedTitle);
+        try{
+            return dataBase.getExtract(selectedTitle);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void updateSavedPage(String pageTitle, String pageExtract) {
-        DataBase.saveInfo(pageTitle, pageExtract);
+        try {
+            dataBase.saveInfo(pageTitle, pageExtract);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     public void setScore(WikiPage series){
-        DataBase.saveScore(Integer.parseInt(series.getPageID()),series.getTitle(), series.getScore());
+        try{
+            dataBase.saveScore(Integer.parseInt(series.getPageID()),series.getTitle(), series.getScore());
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     public int getScore(String pageTitle){
-        return DataBase.getScore(pageTitle);
+        try{
+            return dataBase.getScore(pageTitle);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
     }
 
-    public ArrayList<WikiPage> getScoredSeries() { return DataBase.getScoredSeries();    }
-}
+    public ArrayList<WikiPage> getScoredSeries()  {
+        try{
+            return dataBase.getScoredSeries();
+        } catch (Exception e){
+            e.printStackTrace();
+            }
+        return null;
+    }}

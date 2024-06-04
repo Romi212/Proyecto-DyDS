@@ -24,9 +24,6 @@ public class SearchSeriesModel {
     SearchSeriesAPInterface searchAPI;
 
 
-
-
-
     private ArrayList<SearchSeriesModelListener> listeners = new ArrayList<>();
 
     private ArrayList<WikiPage> searchResultsArray;

@@ -5,7 +5,8 @@ import utils.WikiPage;
 
 public class SearchPageAPIStub implements SearchPageAPInterface {
     @Override
-    public String getExtract(WikiPage wikiPage) {
-        return "EXAMPLE EXTRA";
+    public WikiPage getExtract(WikiPage wikiPage) {
+        wikiPage.setExtract("EXAMPLE EXTRACT");
+        return wikiPage;
     }
 }

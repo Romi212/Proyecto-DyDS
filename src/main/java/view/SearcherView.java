@@ -116,6 +116,7 @@ public class SearcherView {
 
     public WikiPage getLastSearchedSeries() {
 
+
         return lastSearchedSeries;
     }
 
@@ -129,4 +130,6 @@ public class SearcherView {
         // Show the JLabel and JButton
         noScorePanel.setVisible(true);
     }
+
+
 }

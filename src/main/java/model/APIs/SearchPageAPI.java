@@ -30,7 +30,7 @@ public class SearchPageAPI implements SearchPageAPInterface {
     }
 
     @Override
-    public String getExtract(WikiPage wikiPage){
+    public WikiPage getExtract(WikiPage wikiPage){
         String extract = "";
         try {
             //This may take some time, dear user be patient in the meanwhile!
@@ -49,6 +49,10 @@ public class SearchPageAPI implements SearchPageAPInterface {
             Map.Entry<String, JsonElement> firstPageFound = pagesFoundSet.iterator().next();
             JsonObject pageFound = firstPageFound.getValue().getAsJsonObject();
             JsonElement jsonPageExtract = pageFound.get("extract");
+            JsonElement jsonPageUrl = pageFound.get("fullurl");
+            if (jsonPageUrl != null) {
+                wikiPage.setUrl(jsonPageUrl.getAsString());
+            }
             if (jsonPageExtract == null) {
                 extract = "No Results";
             } else {
@@ -61,6 +65,9 @@ public class SearchPageAPI implements SearchPageAPInterface {
         } catch (Exception e12) {
             System.out.println(e12.getMessage());
         }
-        return extract;
+
+        wikiPage.setExtract(extract);
+        return wikiPage;
     }
+
 }

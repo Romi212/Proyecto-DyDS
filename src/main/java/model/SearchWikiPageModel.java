@@ -23,7 +23,7 @@ public class SearchWikiPageModel {
 
 
 
-    private String extract;
+    private WikiPage page;
 
 
     private ArrayList<SearchWikiPageModelListener> listeners = new ArrayList<>();
@@ -48,7 +48,7 @@ public class SearchWikiPageModel {
     }
 
     public void searchPageExtract(WikiPage wikiPage){
-        extract = pageAPI.getExtract(wikiPage);
+        page = pageAPI.getExtract(wikiPage);
 
 
         notifyExtractSearchFinishedListener();
@@ -57,7 +57,11 @@ public class SearchWikiPageModel {
     }
 
     public String getExtract(){
-        return extract;
+        return page.getExtract();
+    }
+
+    public String getUrl(){
+        return page.getUrl();
     }
 
     public void addListener(SearchWikiPageModelListener listener) { this.listeners.add(listener);    }
