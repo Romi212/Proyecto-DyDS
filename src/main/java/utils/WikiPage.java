@@ -10,7 +10,7 @@ public class WikiPage  {
     private Date lastUpdated;
     private String extract;
     private int score;
-    private JMenuItem graphicMenuItem;
+    private WikiPageMenuItem graphicMenuItem;
 
     public WikiPage(String title, String pageID, String snippet) {
         this.title = title;
@@ -29,14 +29,12 @@ public class WikiPage  {
 
     private void createMenuItem() {
         //TODO: Format text somewhere else
-        graphicMenuItem = new JMenuItem();
-        String itemText = "<html><font face=\"arial\">" + title + ": " + snippet;
-        itemText =itemText.replace("<span class=\"searchmatch\">", "")
-                .replace("</span>", "");
-        graphicMenuItem.setText(itemText);
+        graphicMenuItem = new WikiPageMenuItem(title, snippet);
+
+
     }
 
-    public JMenuItem getGraphicMenuItem() { return graphicMenuItem; }
+    public WikiPageMenuItem getGraphicMenuItem() { return graphicMenuItem; }
     public void setScore(int score){ this.score = score;  }
     public int getScore() { return score; }
     public Date getLastUpdated() {  return lastUpdated;}

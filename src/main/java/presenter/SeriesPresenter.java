@@ -6,6 +6,8 @@ import view.ScoredView;
 import view.SearcherView;
 import view.StoredView;
 import view.TVSeriesSearcherWindow;
+
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 
 import static utils.TextProcessing.textToHtml;
@@ -46,16 +48,48 @@ public class SeriesPresenter {
 
     private void initListeners(){
         seriesSearchModel.addListener(this::showSeriesSearchResults);
+        dataBaseModel.addListener(new DataBaseModelListener() {
+                                      @Override
+                                      public void errorOnDataBase(String message) {
+                                            mainWindow.showErrorMessage(searchView.getContentPane(), message);
+                                      }
 
+                                      @Override
+                                      public void SeriesListFound() {
+                                          showSavedSeries();
+                                      }
+
+                                      @Override
+                                        public void extractFound() {
+                                            showExtract();
+                                      }
+
+
+                                      @Override
+                                        public void ScoredSeriesFound() {
+                                            getSavedScores();
+                                        }
+                                  }
+        );
         wikiPageModel.addListener(this::showExtractSearchResults);
     }
 
     private void showSeriesSearchResults(){
-        searchView.showResults(seriesSearchModel.getSearchResults());
+        ArrayList<WikiPage> results = seriesSearchModel.getSearchResults();
+        EditScoredSeries(results);
+        searchView.showResults(results);
         mainWindow.setWatingStatus();
     }
 
+    private ArrayList<WikiPage> EditScoredSeries(ArrayList<WikiPage> results) {
+        for (WikiPage series : results) {
+            if(hasScore(series.getTitle())) series.getGraphicMenuItem().changeScoredText();;
+        }
+        return results;
+    }
+
     private void showExtractSearchResults(){
+        searchView.setLasSearchedExtract(wikiPageModel.getExtract());
         searchView.setSearchResultTextPane(wikiPageModel.getExtract() +"<a href='"+wikiPageModel.getUrl()+"'>"+wikiPageModel.getUrl()+"</a>"  );
         mainWindow.setWatingStatus();
     }
@@ -95,19 +129,26 @@ public class SeriesPresenter {
 
     //STORED VIEW
     public void initializeSavedPanel(){
-        storedView.setSelectSavedComboBox(dataBaseModel.getSavedTitles());
+        dataBaseModel.getSavedTitles();
+    }
+
+    private void showSavedSeries(){
+        storedView.setSelectSavedComboBox(dataBaseModel.getSavedTitlesList());
     }
 
     public void getSavedExtract(){
         taskThread = new Thread(() -> {
             mainWindow.setWorkingStatus();
             String selectedTitle = storedView.getSeletedSavedTitle();
-            String selectedExtract = dataBaseModel.getSavedExtract(selectedTitle);
-            storedView.setSelectedExtract(textToHtml(selectedExtract));
-            mainWindow.setWatingStatus();
+            dataBaseModel.getSavedExtract(selectedTitle);
         });
         //TODO: TERMINAR HILO???
         taskThread.start();
+    }
+    private void showExtract(){
+        String selectedExtract = dataBaseModel.getExtract();
+        storedView.setSelectedExtract(textToHtml(selectedExtract));
+        mainWindow.setWatingStatus();
     }
 
     public void deleteSelectedExtract() {
@@ -116,7 +157,7 @@ public class SeriesPresenter {
             if(mainWindow.askConfirmation(storedView.getContentPane(), "Are you sure you want to delete the selected entry?")){
             //TODO: Best con listener o cone xception?
             dataBaseModel.deleteSavedPage(selectedTitle);
-            storedView.setSelectSavedComboBox(dataBaseModel.getSavedTitles());
+            dataBaseModel.getSavedTitles();
             storedView.emptySavedTextPane();
             }
         }
@@ -138,15 +179,19 @@ public class SeriesPresenter {
     }
 
     public void getSavedScores() {
-        ArrayList<WikiPage> scoredSeries = dataBaseModel.getScoredSeries();
-        scoredView.showSavedScores(scoredSeries);
+        dataBaseModel.getScoredSeries();
+
+    }
+
+    private void showScoredSeries(){
+        scoredView.showSavedScores(dataBaseModel.getScoredSeriesList());
     }
 
     public void onRowSelected() {
         WikiPage selectedSeries = scoredView.getSelectedSeries();
         searchView.setLastSearchedSeries(selectedSeries);
         getExtract(selectedSeries);
-
+       // scoredView.deselectRows();
         mainWindow.showSearchPanel();
 
     }
@@ -156,7 +201,7 @@ public class SeriesPresenter {
     }
 
     public void saveExtractChanges() {
-        updateStoredExtract(storedView.getSeletedSavedTitle(), storedView.getSelectedSavedExtract());
+        updateStoredExtract(storedView.getSeletedSavedTitle(), "",storedView.getSelectedSavedExtract());
 
 
     }
@@ -164,7 +209,7 @@ public class SeriesPresenter {
 
         try{
             WikiPage pageToSave = searchView.getLastSearchedSeries();
-            if(pageToSave != null) updateStoredExtract(pageToSave.getTitle(), pageToSave.getExtract());
+            if(pageToSave != null) updateStoredExtract(pageToSave.getTitle(), pageToSave.getPageID(), pageToSave.getExtract());
             mainWindow.showSuccessMessage(searchView.getContentPane(), "The series was correctly saved!");
 
         } catch(Exception e){
@@ -174,8 +219,8 @@ public class SeriesPresenter {
 
 
     }
-    private void updateStoredExtract(String title, String extract){
-        dataBaseModel.updateSavedPage(title.replace("'", "`"), extract);
+    private void updateStoredExtract(String title, String pageid,String extract){
+        dataBaseModel.updateSavedPage(title.replace("'", "`"), pageid,extract);
 
     }
 

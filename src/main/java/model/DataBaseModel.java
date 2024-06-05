@@ -3,53 +3,78 @@ package model;
 import dyds.tvseriesinfo.fulllogic.DataBase;
 import utils.WikiPage;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class DataBaseModel {
 
     private DataBase dataBase;
-
-
+    private Object[] savedTitles;
+    private String extract;
+    private ArrayList<WikiPage> scoredSeries;
+    private ArrayList<DataBaseModelListener> listeners;
     public DataBaseModel(){
         try{
+            listeners = new ArrayList<>();
             dataBase = new DataBase();
             dataBase.loadDatabase();
+
         } catch (Exception e) {
-            e.printStackTrace();
+            notifyListeners(e.getMessage());
         }
     }
 
-    public Object[] getSavedTitles(){
+    private void notifyListeners(String message) {
+        for (DataBaseModelListener listener: listeners) {
+            listener.errorOnDataBase(message);
+        }
+    }
+
+    public void getSavedTitles(){
+
         try{
-            return dataBase.getTitles().stream().sorted().toArray();
+            savedTitles = dataBase.getTitles().stream().sorted().toArray();
+            notifyFinishedTitlesSearch();
         } catch (Exception e){
-            e.printStackTrace();}
-        return null;
+            notifyListeners(e.getMessage());}
+
+    }
+
+    private void notifyFinishedTitlesSearch() {
+        for (DataBaseModelListener listener: listeners) {
+            listener.SeriesListFound();
+        }
     }
 
     public void deleteSavedPage(String selectedTitle) {
         try{
             dataBase.deleteEntry(selectedTitle);
         } catch (Exception e){
-            e.printStackTrace();
+            notifyListeners(e.getMessage());
         }
 
     }
-    public String getSavedExtract(String selectedTitle) {
+    public void getSavedExtract(String selectedTitle) {
         try{
-            return dataBase.getExtract(selectedTitle);
+            extract = dataBase.getExtract(selectedTitle);
+            notifyExtractFound();
         } catch (Exception e){
-            e.printStackTrace();
+            notifyListeners(e.getMessage());
         }
-        return null;
+
     }
 
-    public void updateSavedPage(String pageTitle, String pageExtract) {
+    private void notifyExtractFound() {
+        for (DataBaseModelListener listener: listeners) {
+            listener.extractFound();
+        }
+    }
+
+
+    public void updateSavedPage(String pageTitle,String pageID, String pageExtract) {
         try {
-            dataBase.saveInfo(pageTitle, pageExtract);
+            dataBase.saveInfo(pageTitle, pageID, pageExtract);
         } catch (Exception e){
-            e.printStackTrace();
+            notifyListeners(e.getMessage());
         }
 
     }
@@ -58,7 +83,7 @@ public class DataBaseModel {
         try{
             dataBase.saveScore(Integer.parseInt(series.getPageID()),series.getTitle(), series.getScore());
         } catch (Exception e){
-            e.printStackTrace();
+            notifyListeners(e.getMessage());
         }
 
     }
@@ -66,17 +91,42 @@ public class DataBaseModel {
     public int getScore(String pageTitle){
         try{
             return dataBase.getScore(pageTitle);
+
         } catch (Exception e){
-            e.printStackTrace();
+            notifyListeners(e.getMessage());
         }
-        return 0;
+    return -1;
     }
 
-    public ArrayList<WikiPage> getScoredSeries()  {
+    public void getScoredSeries()  {
         try{
-            return dataBase.getScoredSeries();
+            scoredSeries= dataBase.getScoredSeries();
+            notifyScoredSeriesFound();
         } catch (Exception e){
-            e.printStackTrace();
+            notifyListeners(e.getMessage());
             }
-        return null;
-    }}
+
+    }
+
+    private void notifyScoredSeriesFound() {
+        for (DataBaseModelListener listener: listeners) {
+            listener.ScoredSeriesFound();
+        }
+    }
+
+    public void addListener(DataBaseModelListener dataBaseModelListener) {
+        listeners.add(dataBaseModelListener);
+    }
+
+    public Object[] getSavedTitlesList() {
+        return savedTitles;
+    }
+
+    public String getExtract() {
+        return extract;
+    }
+
+    public ArrayList<WikiPage> getScoredSeriesList() {
+        return scoredSeries;
+    }
+}

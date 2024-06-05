@@ -13,7 +13,7 @@ public class DataBase {
     //If the database doesnt exists we create it
     String url = "jdbc:sqlite:./dictionary.db";
 
-    Connection connection = DriverManager.getConnection(url);
+    connection = DriverManager.getConnection(url);
       if (connection != null) {
 
         DatabaseMetaData meta = connection.getMetaData();
@@ -22,17 +22,37 @@ public class DataBase {
         Statement statement = connection.createStatement();
         statement.setQueryTimeout(30);
 
-        statement.executeUpdate("create table IF NOT EXIST catalog (id INTEGER, title string PRIMARY KEY, extract string, source integer)");
 
-        statement.executeUpdate("create table IF NOT EXIST scores (id INTEGER, title string PRIMARY KEY, score integer, lastUpdated DATETIME DEFAULT CURRENT_TIMESTAMP)");
-      }
+
+        ResultSet tables = meta.getTables(null, null, "catalog", null);
+        if (!tables.next()) {
+          // Table does not exist, create it
+          createCatalogTable(statement);
+        }
+
+        // Check if the 'scores' table exists
+        tables = meta.getTables(null, null, "scores", null);
+        if (!tables.next()) {
+          // Table does not exist, create it
+          createScoresTable(statement);
+        }
+
+
+        }
 
 
   }
 
+  private void createCatalogTable(Statement statement) throws SQLException {
+    statement.executeUpdate("create table catalog (id INTEGER PRIMARY KEY, title string, extract string, source integer)");
+  }
+
+    private void createScoresTable(Statement statement) throws SQLException {
+        statement.executeUpdate("create table scores (id INTEGER, title string PRIMARY KEY, score integer, lastUpdated DATETIME DEFAULT CURRENT_TIMESTAMP)");
+    }
+
   private  ResultSet searchQuery(String query) throws SQLException{
-    connection = null;
-    connection = DriverManager.getConnection("jdbc:sqlite:./dictionary.db");
+
     Statement statement = connection.createStatement();
     statement.setQueryTimeout(30);
 
@@ -41,8 +61,7 @@ public class DataBase {
   }
 
   private void updateQuery(String query)throws SQLException{
-    connection = null;
-    connection = DriverManager.getConnection("jdbc:sqlite:./dictionary.db");
+
     Statement statement = connection.createStatement();
     statement.setQueryTimeout(30);
 
@@ -54,14 +73,14 @@ public class DataBase {
       connection.close();
   }
 
-  public static void testDB()
+  public  void testDB()
   {
 
-    Connection connection = null;
+
     try
     {
       // create a database connection
-      connection = DriverManager.getConnection("jdbc:sqlite:./dictionary.db");
+
       Statement statement = connection.createStatement();
       statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
@@ -88,23 +107,14 @@ public class DataBase {
     }
     finally
     {
-      try
-      {
-        if(connection != null)
-          connection.close();
-      }
-      catch(SQLException e)
-      {
-        // connection close failed.
-        System.err.println(e);
-      }
+
     }
   }
 
   public void saveScore(int id, String title, int score) throws SQLException{
 
       updateQuery("replace into scores values( "+id+", '"+ title + "', "+ score + ", datetime('now'))");
-      closeConnection();
+     // closeConnection();
 
   }
   public int getScore(String title) throws SQLException {
@@ -119,7 +129,7 @@ public class DataBase {
         System.out.println(rs.getInt("score"));
         score = rs.getInt("score");
       }
-    closeConnection();
+    //closeConnection();
     return score;
   }
 
@@ -127,15 +137,15 @@ public class DataBase {
     ArrayList<String> titles = new ArrayList<>();
     ResultSet rs = searchQuery("select * from catalog");
     while(rs.next()) titles.add(rs.getString("title"));
-    closeConnection();
+   // closeConnection();
 
     return titles;
 
   }
 
-  public void saveInfo(String title, String extract) throws SQLException {
-    updateQuery("replace into catalog values(null, '"+ title + "', '"+ extract + "', 1)");
-    closeConnection();
+  public void saveInfo(String title,String id, String extract) throws SQLException {
+    updateQuery("replace into catalog values( "+id+", '"+ title + "', '"+ extract + "', 1)");
+   // closeConnection();
   }
 
   public String getExtract(String title) throws SQLException {
@@ -145,16 +155,18 @@ public class DataBase {
 
       String extract = rs.getString("extract");
 
-      closeConnection();
-
-      return extract;
+      //closeConnection();
+      WikiPage page = new WikiPage(title, String.valueOf(rs.getInt("id")), "");
+      page.setExtract(extract);
+      //TODO: ACOMODAR
+      return extract + "<a href='"+page.getUrl()+"'>"+page.getUrl()+"</a>";
 
   }
 
   public void deleteEntry(String title) throws SQLException
   {
     updateQuery("DELETE FROM catalog WHERE title = '" + title + "'" );
-    closeConnection();
+    //closeConnection();
 
   }
 
@@ -163,7 +175,7 @@ public class DataBase {
 
     ArrayList<WikiPage> scoredSeries = new ArrayList<>();
 
-      ResultSet rs = searchQuery("select * from scores" );
+      ResultSet rs = searchQuery("select * from scores ORDER BY score ASC" );
       while (rs.next()) {
         WikiPage series = new WikiPage( rs.getString("title"), String.valueOf(rs.getInt("id")),"");
         series.setScore(rs.getInt("score"));
@@ -172,7 +184,7 @@ public class DataBase {
         System.out.println("Scored series: " + rs.getString("title"));
         scoredSeries.add(series);
       }
-    closeConnection();
+    //closeConnection();
     return scoredSeries;
   }
 }

@@ -7,6 +7,7 @@ public class StoredView {
     private JPanel storedPanel;
     private JComboBox selectSavedComboBox;
     private JTextPane showSavedTextPane;
+    private JButton linkButton;
     private SeriesPresenter presenter;
 
 
@@ -21,7 +22,8 @@ public class StoredView {
         setUpPopupMenu();
     }
 
-    private void setUpTextPane() { showSavedTextPane.setContentType("text/html");    }
+    private void setUpTextPane() { showSavedTextPane.setContentType("text/html");
+    showSavedTextPane.setEditable(true);}
 
     private void setUpPopupMenu() {
 
@@ -51,6 +53,7 @@ public class StoredView {
     public void setSelectedExtract(String extract) {
         showSavedTextPane.setText(extract);
     }
+
     public boolean existSelectedEntry() {
         return (selectSavedComboBox.getSelectedIndex() > -1);
     }

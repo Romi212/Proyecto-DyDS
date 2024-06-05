@@ -41,15 +41,17 @@ public class SearcherView {
             if (!source.getValueIsAdjusting())  presenter.recordScore();
         });
 
+        searchResultTextPane.setEditable(false);
+
         searchResultTextPane.addHyperlinkListener(e -> {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+
                     try {
                         Desktop.getDesktop().browse(e.getURL().toURI());
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-                }
+
             }
         });
     }
@@ -69,7 +71,6 @@ public class SearcherView {
         }
     }
     public void setSearchResultTextPane(String text) {
-        lastSearchedSeries.setExtract(text);
         searchResultTextPane.setText(text);
         searchResultTextPane.setCaretPosition(0);
     }
@@ -81,6 +82,10 @@ public class SearcherView {
     public Component getContentPane() { return searchPanel; }
     public void setScore(int i) { scoreSlideBar.setValue(i); }
     public WikiPage getLastSearchedSeries() { return lastSearchedSeries;    }
+
+    public void setLasSearchedExtract(String text){
+        lastSearchedSeries.setExtract(text);
+    }
     public void setLastSearchedSeries(WikiPage lastSearchedSeries) { this.lastSearchedSeries = lastSearchedSeries;}
     public void showNoScore() {
         scoreSlideBar.setVisible(false);

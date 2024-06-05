@@ -16,9 +16,13 @@ public class ScoredView {
     public JPanel getContentPane() {
         return scorePanel;
     }
+    public void deselectRows(){
+        scoresTable.clearSelection();
+    }
     public void setUpView(){
         scoresTable.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) { presenter.onRowSelected(); }
+            if (!e.getValueIsAdjusting() && scoresTable.getSelectedRow() > -1) {
+                presenter.onRowSelected(); }
         });
         model = new DefaultTableModel(new Object[]{"Series Name", "Score", "LastUpdated"}, 0){
             @Override
@@ -28,12 +32,13 @@ public class ScoredView {
     }
     public void showSavedScores(ArrayList<WikiPage> scoredSeries) {
         this.scoredSeries = scoredSeries;
+        model.setRowCount(0);
         for (WikiPage series : scoredSeries) {
             model.addRow(new Object[]{series.getTitle(), series.getScore(), series.getLastUpdated()});
         }
     }
     public WikiPage getSelectedSeries() {
         int selectedRow = scoresTable.getSelectedRow();
-        return scoredSeries.get(selectedRow);
+            return scoredSeries.get(selectedRow);
     }
 }

@@ -84,27 +84,23 @@ public class TVSeriesSearcherWindow {
 
     public void setWorkingStatus() {
         disableComponents(contentPane);
+        disableComponents(tabbedPane);
     }
 
     //TODO: CHANGE??
     private void disableComponents(Container container) {
         for (Component c : container.getComponents()) {
-            if (c instanceof Container) {
-                disableComponents((Container) c);
-            }
             c.setEnabled(false);
         }
     }
 
     public void setWatingStatus() {
         enableComponents(contentPane);
+        enableComponents(tabbedPane);
     }
 
     private void enableComponents(Container container) {
         for (Component c : container.getComponents()) {
-            if (c instanceof Container) {
-                disableComponents((Container) c);
-            }
             c.setEnabled(true);
         }
     }
