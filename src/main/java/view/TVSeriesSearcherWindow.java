@@ -3,20 +3,14 @@ package view;
 import presenter.SeriesPresenter;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 
 public class TVSeriesSearcherWindow {
     private JTabbedPane tabbedPane;
     private JPanel contentPane;
-
     private ScoredView scoredView;
-
     private StoredView storedView;
-
     private SearcherView searcherView;
-
     private SeriesPresenter presenter;
 
     public TVSeriesSearcherWindow(SeriesPresenter presenter) {
@@ -24,9 +18,9 @@ public class TVSeriesSearcherWindow {
         searcherView = new SearcherView(presenter);
         scoredView = new ScoredView(presenter);
         this.presenter = presenter;
-
     }
-    public void showView(){
+
+    public void showView() {
         JFrame frame = new JFrame("TV Series Info Repo");
         frame.setContentPane(contentPane);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -37,18 +31,11 @@ public class TVSeriesSearcherWindow {
         tabbedPane.addTab("Stored", storedView.getContentPane());
         tabbedPane.addTab("Scored", scoredView.getContentPane());
 
-       // setUpSavedPanel();
-        tabbedPane.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-
-                presenter.changedTabs();
-            }
-        });
+        tabbedPane.addChangeListener(e -> presenter.changedTabs());
 
         try {
-            // Set System L&F
-            UIManager.put("nimbusSelection", new Color(247,248,250));
+            // TODO: CHeck this
+            UIManager.put("nimbusSelection", new Color(247, 248, 250));
             //UIManager.put("nimbusBase", new Color(51,98,140)); //This is redundant!
 
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -57,8 +44,7 @@ public class TVSeriesSearcherWindow {
                     break;
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Something went wrong with UI!");
         }
     }
@@ -71,7 +57,9 @@ public class TVSeriesSearcherWindow {
         return storedView;
     }
 
-    public ScoredView getScoredView() { return scoredView; }
+    public ScoredView getScoredView() {
+        return scoredView;
+    }
 
     public void showSearchPanel() {
         tabbedPane.setSelectedIndex(0);
@@ -81,10 +69,43 @@ public class TVSeriesSearcherWindow {
         return tabbedPane.getSelectedIndex();
     }
 
-    public void showSuccessMessage(Component panel, String message, String title) {
-        JOptionPane.showMessageDialog(panel,message,title, JOptionPane.INFORMATION_MESSAGE);
+    public void showSuccessMessage(Component panel, String message) {
+        JOptionPane.showMessageDialog(panel, message, "Success", JOptionPane.INFORMATION_MESSAGE);
     }
-    public void showErrorMessage(Component panel, String message, String title) {
-        JOptionPane.showMessageDialog(panel, message, title, JOptionPane.ERROR_MESSAGE);
+
+    public void showErrorMessage(Component panel, String message) {
+        JOptionPane.showMessageDialog(panel, message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public boolean askConfirmation(Component panel, String message) {
+        int result = JOptionPane.showConfirmDialog(panel, message, "Warning", JOptionPane.YES_NO_OPTION);
+        return result == JOptionPane.YES_OPTION;
+    }
+
+    public void setWorkingStatus() {
+        disableComponents(contentPane);
+    }
+
+    //TODO: CHANGE??
+    private void disableComponents(Container container) {
+        for (Component c : container.getComponents()) {
+            if (c instanceof Container) {
+                disableComponents((Container) c);
+            }
+            c.setEnabled(false);
+        }
+    }
+
+    public void setWatingStatus() {
+        enableComponents(contentPane);
+    }
+
+    private void enableComponents(Container container) {
+        for (Component c : container.getComponents()) {
+            if (c instanceof Container) {
+                disableComponents((Container) c);
+            }
+            c.setEnabled(true);
+        }
     }
 }

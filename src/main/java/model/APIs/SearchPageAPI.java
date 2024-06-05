@@ -49,10 +49,11 @@ public class SearchPageAPI implements SearchPageAPInterface {
             Map.Entry<String, JsonElement> firstPageFound = pagesFoundSet.iterator().next();
             JsonObject pageFound = firstPageFound.getValue().getAsJsonObject();
             JsonElement jsonPageExtract = pageFound.get("extract");
-            JsonElement jsonPageUrl = pageFound.get("fullurl");
-            if (jsonPageUrl != null) {
-                wikiPage.setUrl(jsonPageUrl.getAsString());
-            }
+            //JsonElement jsonPageUrl = pageFound.get("fullurl");
+            //if (jsonPageUrl != null) {
+           //     wikiPage.setUrl(jsonPageUrl.getAsString());
+           // }
+            //wikiPage.setUrl(" https://en.wikipedia.org/?curid="+wikiPage.getPageID());
             if (jsonPageExtract == null) {
                 extract = "No Results";
             } else {
