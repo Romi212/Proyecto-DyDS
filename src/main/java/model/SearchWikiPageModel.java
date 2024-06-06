@@ -49,10 +49,7 @@ public class SearchWikiPageModel {
 
     public void searchPageExtract(WikiPage wikiPage){
         page = pageAPI.getExtract(wikiPage);
-
-
         notifyExtractSearchFinishedListener();
-
 
     }
 

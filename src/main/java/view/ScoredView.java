@@ -41,4 +41,8 @@ public class ScoredView {
         int selectedRow = scoresTable.getSelectedRow();
             return scoredSeries.get(selectedRow);
     }
+
+    public JTable getScoresTable(){
+        return scoresTable;
+    }
 }

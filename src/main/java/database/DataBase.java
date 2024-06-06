@@ -1,4 +1,4 @@
-package dyds.tvseriesinfo.fulllogic;
+package database;
 
 import utils.WikiPage;
 
@@ -6,9 +6,10 @@ import javax.naming.directory.SearchResult;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class DataBase {
+public class DataBase implements DataBaseInterface {
 
   private Connection connection;
+  @Override
   public void loadDatabase() throws SQLException {
     //If the database doesnt exists we create it
     String url = "jdbc:sqlite:./dictionary.db";
@@ -73,50 +74,14 @@ public class DataBase {
       connection.close();
   }
 
-  public  void testDB()
-  {
-
-
-    try
-    {
-      // create a database connection
-
-      Statement statement = connection.createStatement();
-      statement.setQueryTimeout(30);  // set timeout to 30 sec.
-
-      //statement.executeUpdate("drop table if exists person");
-      //statement.executeUpdate("create table person (id integer, name string)");
-      //statement.executeUpdate("insert into person values(1, 'leo')");
-      //statement.executeUpdate("insert into person values(2, 'yui')");
-      ResultSet rs = statement.executeQuery("select * from catalog");
-      while(rs.next())
-      {
-        // read the result set
-        System.out.println("id = " + rs.getInt("id"));
-        System.out.println("title = " + rs.getString("title"));
-        System.out.println("extract = " + rs.getString("extract"));
-        System.out.println("source = " + rs.getString("source"));
-
-      }
-    }
-    catch(SQLException e)
-    {
-      // if the error message is "out of memory",
-      // it probably means no database file is found
-      System.err.println(e.getMessage());
-    }
-    finally
-    {
-
-    }
-  }
-
+  @Override
   public void saveScore(int id, String title, int score) throws SQLException{
 
       updateQuery("replace into scores values( "+id+", '"+ title + "', "+ score + ", datetime('now'))");
      // closeConnection();
 
   }
+  @Override
   public int getScore(String title) throws SQLException {
 
     int score = -1;
@@ -133,6 +98,7 @@ public class DataBase {
     return score;
   }
 
+  @Override
   public ArrayList<String> getTitles() throws SQLException {
     ArrayList<String> titles = new ArrayList<>();
     ResultSet rs = searchQuery("select * from catalog");
@@ -143,11 +109,13 @@ public class DataBase {
 
   }
 
-  public void saveInfo(String title,String id, String extract) throws SQLException {
+  @Override
+  public void saveInfo(String title, String id, String extract) throws SQLException {
     updateQuery("replace into catalog values( "+id+", '"+ title + "', '"+ extract + "', 1)");
    // closeConnection();
   }
 
+  @Override
   public String getExtract(String title) throws SQLException {
 
       ResultSet rs = searchQuery("select * from catalog WHERE title = '" + title + "'" );
@@ -163,6 +131,7 @@ public class DataBase {
 
   }
 
+  @Override
   public void deleteEntry(String title) throws SQLException
   {
     updateQuery("DELETE FROM catalog WHERE title = '" + title + "'" );
@@ -171,6 +140,7 @@ public class DataBase {
   }
 
 
+  @Override
   public ArrayList<WikiPage> getScoredSeries() throws SQLException{
 
     ArrayList<WikiPage> scoredSeries = new ArrayList<>();
@@ -188,6 +158,7 @@ public class DataBase {
     return scoredSeries;
   }
 
+  @Override
   public int getID(String selectedTitle) throws SQLException {
     int id = -1;
       ResultSet rs = searchQuery("select * from catalog WHERE title = '" + selectedTitle + "'");

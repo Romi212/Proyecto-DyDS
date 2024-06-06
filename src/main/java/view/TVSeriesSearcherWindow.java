@@ -104,4 +104,8 @@ public class TVSeriesSearcherWindow {
             c.setEnabled(true);
         }
     }
+
+    public JTabbedPane getTabbedPane() {
+        return tabbedPane;
+    }
 }

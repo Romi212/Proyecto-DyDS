@@ -1,23 +1,24 @@
 package model;
 
-import dyds.tvseriesinfo.fulllogic.DataBase;
+import database.DataBase;
+import database.DataBaseInterface;
 import utils.WikiPage;
 
 import java.util.ArrayList;
 
 public class DataBaseModel {
 
-    private DataBase dataBase;
+    private DataBaseInterface dataBase;
     private Object[] savedTitles;
     private String extract;
     private ArrayList<WikiPage> scoredSeries;
 
     private int id;
     private ArrayList<DataBaseModelListener> listeners;
-    public DataBaseModel(){
+    public DataBaseModel(DataBaseInterface dataBase){
         try{
             listeners = new ArrayList<>();
-            dataBase = new DataBase();
+            this.dataBase = dataBase;
             dataBase.loadDatabase();
 
         } catch (Exception e) {

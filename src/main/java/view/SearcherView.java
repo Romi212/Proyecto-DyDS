@@ -10,6 +10,7 @@ import java.util.ArrayList;
 public class SearcherView {
     private JPanel searchPanel;
     private JTextField searchTextField;
+    private JPopupMenu searchOptionsMenu;
     private JButton searchButton;
     private JTextPane searchResultTextPane;
     private JButton saveLocallyButton;
@@ -58,7 +59,7 @@ public class SearcherView {
     public int getScore(){ return scoreSlideBar.getValue();}
 
     public void showResults(ArrayList<WikiPage> wikiPages){
-        JPopupMenu searchOptionsMenu = new JPopupMenu("Search Results");
+        searchOptionsMenu = new JPopupMenu("Search Results");
         for(WikiPage wikiPage : wikiPages){
             wikiPage.getGraphicMenuItem().addActionListener(actionEvent -> {
                 lastSearchedSeries = wikiPage;
@@ -90,5 +91,20 @@ public class SearcherView {
     public void showNoScore() {
         scoreSlideBar.setVisible(false);
         noScorePanel.setVisible(true);
+    }
+
+    public void setSearchTextField(String text) {
+        searchTextField.setText(text);
+    }
+
+    public AbstractButton getSearchButton() {
+        return searchButton;
+    }
+
+    public JPopupMenu getResults(){
+        return searchOptionsMenu;
+    }
+    public String getSearchResultTextPane() {
+        return searchResultTextPane.getText();
     }
 }

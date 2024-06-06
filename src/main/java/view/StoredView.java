@@ -2,7 +2,6 @@ package view;
 
 import presenter.SeriesPresenter;
 import javax.swing.*;
-import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
 import java.net.URI;
 
@@ -87,5 +86,9 @@ public class StoredView {
     public void setURL(String url) {
         linkButton.setText(url);
         linkButton.setVisible(true);
+    }
+
+    public JComboBox getStoredSeries() {
+        return selectSavedComboBox;
     }
 }

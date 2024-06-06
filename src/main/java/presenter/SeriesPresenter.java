@@ -31,8 +31,8 @@ public class SeriesPresenter {
         seriesSearchModel.setPresenter(this);
     }
 
-    public void start(){
-        mainWindow = new TVSeriesSearcherWindow(this);
+    public void start(TVSeriesSearcherWindow mainWindow){
+        this.mainWindow = mainWindow;
         searchView = mainWindow.getSearchView();
         searchView.setUpView();
 
