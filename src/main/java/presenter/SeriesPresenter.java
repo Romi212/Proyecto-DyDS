@@ -10,6 +10,7 @@ import view.TVSeriesSearcherWindow;
 import javax.xml.crypto.Data;
 import java.util.ArrayList;
 
+import static utils.TextProcessing.generateURL;
 import static utils.TextProcessing.textToHtml;
 
 public class SeriesPresenter {
@@ -67,7 +68,7 @@ public class SeriesPresenter {
 
                                       @Override
                                         public void ScoredSeriesFound() {
-                                            getSavedScores();
+                                            showScoredSeries();
                                         }
                                   }
         );
@@ -147,7 +148,9 @@ public class SeriesPresenter {
     }
     private void showExtract(){
         String selectedExtract = dataBaseModel.getExtract();
+        int id = dataBaseModel.getID();
         storedView.setSelectedExtract(textToHtml(selectedExtract));
+        storedView.setURL(generateURL(id));
         mainWindow.setWatingStatus();
     }
 
@@ -201,9 +204,7 @@ public class SeriesPresenter {
     }
 
     public void saveExtractChanges() {
-        updateStoredExtract(storedView.getSeletedSavedTitle(), "",storedView.getSelectedSavedExtract());
-
-
+        updateStoredExtract(storedView.getSeletedSavedTitle(), String.valueOf(dataBaseModel.getID()),storedView.getSelectedSavedExtract());
     }
     public void saveLocally() {
 
@@ -238,4 +239,6 @@ public class SeriesPresenter {
                 break;
         }
     }
+
+
 }

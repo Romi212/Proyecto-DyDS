@@ -24,6 +24,7 @@ public class DataBase {
 
 
 
+
         ResultSet tables = meta.getTables(null, null, "catalog", null);
         if (!tables.next()) {
           // Table does not exist, create it
@@ -36,7 +37,6 @@ public class DataBase {
           // Table does not exist, create it
           createScoresTable(statement);
         }
-
 
         }
 
@@ -159,7 +159,7 @@ public class DataBase {
       WikiPage page = new WikiPage(title, String.valueOf(rs.getInt("id")), "");
       page.setExtract(extract);
       //TODO: ACOMODAR
-      return extract + "<a href='"+page.getUrl()+"'>"+page.getUrl()+"</a>";
+      return extract ;
 
   }
 
@@ -186,5 +186,13 @@ public class DataBase {
       }
     //closeConnection();
     return scoredSeries;
+  }
+
+  public int getID(String selectedTitle) throws SQLException {
+    int id = -1;
+      ResultSet rs = searchQuery("select * from catalog WHERE title = '" + selectedTitle + "'");
+      rs.next();
+      id = rs.getInt("id");
+    return id;
   }
 }

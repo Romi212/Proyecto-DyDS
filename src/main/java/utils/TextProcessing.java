@@ -11,4 +11,8 @@ public class TextProcessing {
         builder.append("</font>");
         return builder.toString();
     }
+
+    public static String generateURL(int id){
+        return "https://en.wikipedia.org/?curid="+id;
+    }
 }

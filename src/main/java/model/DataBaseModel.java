@@ -11,6 +11,8 @@ public class DataBaseModel {
     private Object[] savedTitles;
     private String extract;
     private ArrayList<WikiPage> scoredSeries;
+
+    private int id;
     private ArrayList<DataBaseModelListener> listeners;
     public DataBaseModel(){
         try{
@@ -56,6 +58,7 @@ public class DataBaseModel {
     public void getSavedExtract(String selectedTitle) {
         try{
             extract = dataBase.getExtract(selectedTitle);
+            id = dataBase.getID(selectedTitle);
             notifyExtractFound();
         } catch (Exception e){
             notifyListeners(e.getMessage());
@@ -128,5 +131,9 @@ public class DataBaseModel {
 
     public ArrayList<WikiPage> getScoredSeriesList() {
         return scoredSeries;
+    }
+
+    public int getID() {
+        return id;
     }
 }

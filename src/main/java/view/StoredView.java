@@ -2,6 +2,9 @@ package view;
 
 import presenter.SeriesPresenter;
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import java.awt.*;
+import java.net.URI;
 
 public class StoredView {
     private JPanel storedPanel;
@@ -20,10 +23,23 @@ public class StoredView {
         setUpComboBox();
         setUpTextPane();
         setUpPopupMenu();
+        setUpLinkButton();
+    }
+
+    private void setUpLinkButton() {
+        linkButton.setVisible(false);
+        linkButton.addActionListener(e -> {
+            try {
+                Desktop.getDesktop().browse(new URI(linkButton.getText()));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
     private void setUpTextPane() { showSavedTextPane.setContentType("text/html");
-    showSavedTextPane.setEditable(true);}
+    showSavedTextPane.setEditable(true);
+       }
 
     private void setUpPopupMenu() {
 
@@ -59,11 +75,17 @@ public class StoredView {
     }
     public void emptySavedTextPane() {
         showSavedTextPane.setText("");
+        linkButton.setVisible(false);
     }
     public String getSelectedSavedExtract() {
         return showSavedTextPane.getText();
     }
     public JPanel getContentPane() {
         return storedPanel;
+    }
+
+    public void setURL(String url) {
+        linkButton.setText(url);
+        linkButton.setVisible(true);
     }
 }
