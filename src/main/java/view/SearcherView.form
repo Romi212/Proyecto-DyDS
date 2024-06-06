@@ -53,6 +53,7 @@
         <properties>
           <majorTickSpacing value="1"/>
           <maximum value="10"/>
+          <minimum value="1"/>
           <paintLabels value="true"/>
           <paintTicks value="true"/>
           <snapToTicks value="true"/>

@@ -1,6 +1,8 @@
 package view;
 
 import presenter.SeriesPresenter;
+import presenter.StorePresenter;
+
 import javax.swing.*;
 import java.awt.*;
 import java.net.URI;
@@ -10,10 +12,10 @@ public class StoredView {
     private JComboBox selectSavedComboBox;
     private JTextPane showSavedTextPane;
     private JButton linkButton;
-    private SeriesPresenter presenter;
+    private StorePresenter presenter;
 
 
-    public StoredView( SeriesPresenter presenter) {
+    public StoredView( StorePresenter presenter) {
         this.presenter = presenter;
     }
 

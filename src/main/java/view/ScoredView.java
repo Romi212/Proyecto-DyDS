@@ -1,5 +1,6 @@
 package view;
 
+import presenter.ScorePresenter;
 import presenter.SeriesPresenter;
 import utils.WikiPage;
 import javax.swing.*;
@@ -10,9 +11,9 @@ public class ScoredView {
     private JPanel scorePanel;
     private JTable scoresTable;
     private ArrayList<WikiPage> scoredSeries;
-    private SeriesPresenter presenter;
+    private ScorePresenter presenter;
     private DefaultTableModel model;
-    public ScoredView(SeriesPresenter presenter) {  this.presenter = presenter; }
+    public ScoredView(ScorePresenter presenter) {  this.presenter = presenter; }
     public JPanel getContentPane() {
         return scorePanel;
     }

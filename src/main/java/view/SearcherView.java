@@ -1,5 +1,6 @@
 package view;
 
+import presenter.SearchPresenter;
 import presenter.SeriesPresenter;
 import utils.WikiPage;
 import javax.swing.*;
@@ -18,11 +19,11 @@ public class SearcherView {
     private JButton setScoreButton;
     private JLabel noScoreFoundLabel;
     private JPanel noScorePanel;
-    private SeriesPresenter presenter;
+    private SearchPresenter presenter;
     private WikiPage lastSearchedSeries;
 
 
-    public SearcherView( SeriesPresenter presenter) { this.presenter = presenter;}
+    public SearcherView( SearchPresenter presenter) { this.presenter = presenter;}
     public void setUpView() {
 
         searchResultTextPane.setContentType("text/html");
@@ -107,4 +108,6 @@ public class SearcherView {
     public String getSearchResultTextPane() {
         return searchResultTextPane.getText();
     }
+
+
 }
