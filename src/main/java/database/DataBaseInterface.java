@@ -14,4 +14,6 @@ public interface DataBaseInterface {
     void deleteEntry(String title) throws SQLException;
     ArrayList<WikiPage> getScoredSeries() throws SQLException;
     int getID(String selectedTitle) throws SQLException;
+
+    void closeConnection() throws SQLException;
 }

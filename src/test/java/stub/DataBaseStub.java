@@ -61,4 +61,9 @@ public class DataBaseStub implements DataBaseInterface {
         System.out.println("getID");
         return 777;
     }
+
+    @Override
+    public void closeConnection() {
+        System.out.println("closeConnection");
+    }
 }

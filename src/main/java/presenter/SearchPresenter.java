@@ -29,7 +29,7 @@ public class SearchPresenter {
     }
     private ArrayList<WikiPage> EditScoredSeries(ArrayList<WikiPage> results) {
         for (WikiPage series : results) {
-            if(presenter.hasScore(series.getTitle())) series.getGraphicMenuItem().changeScoredText();;
+            if(presenter.hasScore(series.getTitle())) series.getGraphicMenuItem().changeScoredText();
         }
         return results;
     }

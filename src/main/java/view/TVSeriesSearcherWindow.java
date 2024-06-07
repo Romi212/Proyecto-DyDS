@@ -4,6 +4,8 @@ import presenter.SeriesPresenter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class TVSeriesSearcherWindow {
     private JTabbedPane tabbedPane;
@@ -26,6 +28,13 @@ public class TVSeriesSearcherWindow {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                    presenter.closeWindow();
+            }
+        });
 
         tabbedPane.addTab("Search", searcherViewInterface.getContentPane());
         tabbedPane.addTab("Stored", storedViewInterface.getContentPane());
@@ -105,4 +114,6 @@ public class TVSeriesSearcherWindow {
     public JTabbedPane getTabbedPane() {
         return tabbedPane;
     }
+
+
 }

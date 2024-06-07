@@ -125,4 +125,8 @@ public class SeriesPresenter {
     public void showSearchPanel() {
         mainWindow.showSearchPanel();
     }
+
+    public void closeWindow() {
+        dataBaseModel.closeConnection();
+    }
 }

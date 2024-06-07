@@ -110,4 +110,13 @@ public class DataBaseModel {
     public int getID() {
         return id;
     }
+
+    public void closeConnection() {
+        try {
+            dataBase.closeConnection();
+        } catch (Exception e) {
+            NotifyErrorListeners(e.getMessage());
+        }
+
+    }
 }
