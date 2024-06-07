@@ -1,12 +1,13 @@
 package presenter;
 
 import model.DataBaseModel;
-import view.StoredView;
+import view.StoredViewInterface;
+
 import static utils.TextProcessing.generateURL;
 import static utils.TextProcessing.textToHtml;
 
 public class StorePresenter {
-    StoredView storedView;
+    StoredViewInterface storedViewInterface;
     DataBaseModel dataBaseModel;
     Thread taskThread;
     SeriesPresenter presenter;
@@ -14,19 +15,19 @@ public class StorePresenter {
         this.dataBaseModel = dataBaseModel;
         this.presenter = presenter;
     }
-    public void setView(StoredView storedView){
-        this.storedView = storedView;
+    public void setView(StoredViewInterface storedViewInterface){
+        this.storedViewInterface = storedViewInterface;
     }
     public void initializeSavedPanel(){
         dataBaseModel.getSavedTitles();
     }
     public void showSavedSeries(){
-        storedView.setSelectSavedComboBox(dataBaseModel.getSavedTitlesList());
+        storedViewInterface.setSelectSavedComboBox(dataBaseModel.getSavedTitlesList());
     }
     public void getSavedExtract(){
         taskThread = new Thread(() -> {
             presenter.setWindowWorkingStatus();
-            String selectedTitle = storedView.getSeletedSavedTitle();
+            String selectedTitle = storedViewInterface.getSeletedSavedTitle();
             dataBaseModel.getSavedExtract(selectedTitle);
         });
         taskThread.start();
@@ -34,22 +35,22 @@ public class StorePresenter {
     public void showExtract(){
         String selectedExtract = dataBaseModel.getExtract();
         int id = dataBaseModel.getID();
-        storedView.setSelectedExtract(textToHtml(selectedExtract));
-        storedView.setURL(generateURL(id));
+        storedViewInterface.setSelectedExtract(textToHtml(selectedExtract));
+        storedViewInterface.setURL(generateURL(id));
         presenter.setWindowWatingStatus();
     }
     public void deleteSelectedExtract() {
-        if(storedView.existSelectedEntry()){
-            String selectedTitle = storedView.getSeletedSavedTitle();
+        if(storedViewInterface.existSelectedEntry()){
+            String selectedTitle = storedViewInterface.getSeletedSavedTitle();
             if(presenter.askDeleteConfirmation()){
                 dataBaseModel.deleteSavedPage(selectedTitle);
                 dataBaseModel.getSavedTitles();
-                storedView.emptySavedTextPane();
+                storedViewInterface.emptySavedTextPane();
             }
         }
     }
 
     public void saveExtractChanges() {
-        dataBaseModel.updateSavedPage(storedView.getSeletedSavedTitle().replace("'", "`"), String.valueOf(dataBaseModel.getID()),storedView.getSelectedSavedExtract());
+        dataBaseModel.updateSavedPage(storedViewInterface.getSeletedSavedTitle().replace("'", "`"), String.valueOf(dataBaseModel.getID()), storedViewInterface.getSelectedSavedExtract());
     }
 }

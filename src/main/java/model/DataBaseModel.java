@@ -55,7 +55,7 @@ public class DataBaseModel {
             id = dataBase.getID(selectedTitle);
             notifyExtractFound();
         } catch (Exception e){
-            NotifyErrorListeners(e.getMessage());
+            NotifyErrorListeners(e.getMessage() );
         }
     }
     private void notifyExtractFound() {

@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.URI;
 
-public class StoredView {
+public class StoredView implements StoredViewInterface {
     private JPanel storedPanel;
     private JComboBox selectSavedComboBox;
     private JTextPane showSavedTextPane;
@@ -20,6 +20,7 @@ public class StoredView {
     }
 
 
+    @Override
     public void setUpView(){
         setUpComboBox();
         setUpTextPane();
@@ -59,37 +60,46 @@ public class StoredView {
 
     private void setUpComboBox() {  presenter.initializeSavedPanel();  }
 
+    @Override
     public void setSelectSavedComboBox(Object[] titles){
 
         selectSavedComboBox.setModel(new DefaultComboBoxModel(titles));
         selectSavedComboBox.addActionListener(actionEvent -> presenter.getSavedExtract());
     }
+    @Override
     public String getSeletedSavedTitle() {
         return selectSavedComboBox.getSelectedItem().toString();
     }
+    @Override
     public void setSelectedExtract(String extract) {
         showSavedTextPane.setText(extract);
     }
 
+    @Override
     public boolean existSelectedEntry() {
         return (selectSavedComboBox.getSelectedIndex() > -1);
     }
+    @Override
     public void emptySavedTextPane() {
         showSavedTextPane.setText("");
         linkButton.setVisible(false);
     }
+    @Override
     public String getSelectedSavedExtract() {
         return showSavedTextPane.getText();
     }
+    @Override
     public JPanel getContentPane() {
         return storedPanel;
     }
 
+    @Override
     public void setURL(String url) {
         linkButton.setText(url);
         linkButton.setVisible(true);
     }
 
+    @Override
     public JComboBox getStoredSeries() {
         return selectSavedComboBox;
     }

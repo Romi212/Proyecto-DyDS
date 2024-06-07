@@ -1,6 +1,3 @@
-import database.DataBase;
-import model.APIs.SearchPageAPI;
-import model.APIs.SearchSeriesAPI;
 import model.DataBaseModel;
 import model.SearchSeriesModel;
 import model.SearchWikiPageModel;
@@ -10,22 +7,18 @@ import presenter.SeriesPresenter;
 import stub.DataBaseStub;
 import stub.SearchPageAPIStub;
 import stub.SearchSeriesAPIStub;
-import view.ScoredView;
-import view.SearcherView;
-import view.StoredView;
-import view.TVSeriesSearcherWindow;
+import view.*;
 
 import javax.swing.*;
-import javax.swing.plaf.metal.MetalComboBoxButton;
 
 import static org.junit.Assert.assertEquals;
 
 public class integrationTest {
 
-    SearcherView searcherView;
+    SearcherViewInterface searcherView;
     TVSeriesSearcherWindow mainWindow;
-    ScoredView scoredView;
-    StoredView storedView;
+    ScoredViewInterface scoredView;
+    StoredViewInterface storedView;
 
     @Before
     public void setUp(){

@@ -8,15 +8,15 @@ import java.awt.*;
 public class TVSeriesSearcherWindow {
     private JTabbedPane tabbedPane;
     private JPanel contentPane;
-    private ScoredView scoredView;
-    private StoredView storedView;
-    private SearcherView searcherView;
+    private ScoredViewInterface scoredViewInterface;
+    private StoredViewInterface storedViewInterface;
+    private SearcherViewInterface searcherViewInterface;
     private SeriesPresenter presenter;
 
     public TVSeriesSearcherWindow(SeriesPresenter presenter) {
-        storedView = new StoredView(presenter.getStorePresenter());
-        searcherView = new SearcherView(presenter.getSearchPresenter());
-        scoredView = new ScoredView(presenter.getScorePresenter());
+        storedViewInterface = new StoredView(presenter.getStorePresenter());
+        searcherViewInterface = new SearcherView(presenter.getSearchPresenter());
+        scoredViewInterface = new ScoredView(presenter.getScorePresenter());
         this.presenter = presenter;
     }
 
@@ -27,9 +27,9 @@ public class TVSeriesSearcherWindow {
         frame.pack();
         frame.setVisible(true);
 
-        tabbedPane.addTab("Search", searcherView.getContentPane());
-        tabbedPane.addTab("Stored", storedView.getContentPane());
-        tabbedPane.addTab("Scored", scoredView.getContentPane());
+        tabbedPane.addTab("Search", searcherViewInterface.getContentPane());
+        tabbedPane.addTab("Stored", storedViewInterface.getContentPane());
+        tabbedPane.addTab("Scored", scoredViewInterface.getContentPane());
 
         tabbedPane.addChangeListener(e -> presenter.changedTabs());
 
@@ -47,16 +47,16 @@ public class TVSeriesSearcherWindow {
         }
     }
 
-    public SearcherView getSearchView() {
-        return searcherView;
+    public SearcherViewInterface getSearchView() {
+        return searcherViewInterface;
     }
 
-    public StoredView getStoredView() {
-        return storedView;
+    public StoredViewInterface getStoredView() {
+        return storedViewInterface;
     }
 
-    public ScoredView getScoredView() {
-        return scoredView;
+    public ScoredViewInterface getScoredView() {
+        return scoredViewInterface;
     }
 
     public void showSearchPanel() {
@@ -76,7 +76,7 @@ public class TVSeriesSearcherWindow {
     }
 
     public boolean askConfirmation( String message) {
-        int result = JOptionPane.showConfirmDialog(storedView.getContentPane(), message, "Warning", JOptionPane.YES_NO_OPTION);
+        int result = JOptionPane.showConfirmDialog(storedViewInterface.getContentPane(), message, "Warning", JOptionPane.YES_NO_OPTION);
         return result == JOptionPane.YES_OPTION;
     }
 

@@ -2,16 +2,7 @@ package presenter;
 
 import model.*;
 import utils.WikiPage;
-import view.ScoredView;
-import view.SearcherView;
-import view.StoredView;
-import view.TVSeriesSearcherWindow;
-
-import javax.xml.crypto.Data;
-import java.util.ArrayList;
-
-import static utils.TextProcessing.generateURL;
-import static utils.TextProcessing.textToHtml;
+import view.*;
 
 public class SeriesPresenter {
 
@@ -35,15 +26,15 @@ public class SeriesPresenter {
 
     public void start(TVSeriesSearcherWindow mainWindow){
         this.mainWindow = mainWindow;
-        SearcherView searchView = mainWindow.getSearchView();
+        SearcherViewInterface searchView = mainWindow.getSearchView();
         searchPresenter.setView(searchView);
         searchView.setUpView();
-        StoredView storedView = mainWindow.getStoredView();
-        storePresenter.setView(storedView);
-        storedView.setUpView();
-        ScoredView scoredView = mainWindow.getScoredView();
-        scorePresenter.setView(scoredView);
-        scoredView.setUpView();
+        StoredViewInterface storedViewInterface = mainWindow.getStoredView();
+        storePresenter.setView(storedViewInterface);
+        storedViewInterface.setUpView();
+        ScoredViewInterface scoredViewInterface = mainWindow.getScoredView();
+        scorePresenter.setView(scoredViewInterface);
+        scoredViewInterface.setUpView();
 
         mainWindow.showView();
 

@@ -8,7 +8,7 @@ import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class SearcherView {
+public class SearcherView implements SearcherViewInterface {
     private JPanel searchPanel;
     private JTextField searchTextField;
     private JPopupMenu searchOptionsMenu;
@@ -24,6 +24,7 @@ public class SearcherView {
 
 
     public SearcherView( SearchPresenter presenter) { this.presenter = presenter;}
+    @Override
     public void setUpView() {
 
         searchResultTextPane.setContentType("text/html");
@@ -57,8 +58,10 @@ public class SearcherView {
             }
         });
     }
+    @Override
     public int getScore(){ return scoreSlideBar.getValue();}
 
+    @Override
     public void showResults(ArrayList<WikiPage> wikiPages){
         searchOptionsMenu = new JPopupMenu("Search Results");
         for(WikiPage wikiPage : wikiPages){
@@ -72,39 +75,52 @@ public class SearcherView {
             searchOptionsMenu.show(searchResultTextPane, searchResultTextPane.getX(), searchResultTextPane.getY());
         }
     }
+    @Override
     public void setSearchResultTextPane(String text) {
         searchResultTextPane.setText(text);
         searchResultTextPane.setCaretPosition(0);
     }
+    @Override
     public void showScore(){
         scoreSlideBar.setVisible(true);
         noScorePanel.setVisible(false);
     }
+    @Override
     public String getSeriesName() { return searchTextField.getText(); }
+    @Override
     public Component getContentPane() { return searchPanel; }
+    @Override
     public void setScore(int i) { scoreSlideBar.setValue(i); }
+    @Override
     public WikiPage getLastSearchedSeries() { return lastSearchedSeries;    }
 
+    @Override
     public void setLasSearchedExtract(String text){
         lastSearchedSeries.setExtract(text);
     }
+    @Override
     public void setLastSearchedSeries(WikiPage lastSearchedSeries) { this.lastSearchedSeries = lastSearchedSeries;}
+    @Override
     public void showNoScore() {
         scoreSlideBar.setVisible(false);
         noScorePanel.setVisible(true);
     }
 
+    @Override
     public void setSearchTextField(String text) {
         searchTextField.setText(text);
     }
 
+    @Override
     public AbstractButton getSearchButton() {
         return searchButton;
     }
 
+    @Override
     public JPopupMenu getResults(){
         return searchOptionsMenu;
     }
+    @Override
     public String getSearchResultTextPane() {
         return searchResultTextPane.getText();
     }

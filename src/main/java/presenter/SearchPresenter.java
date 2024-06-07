@@ -4,13 +4,14 @@ import model.DataBaseModel;
 import model.SearchSeriesModel;
 import model.SearchWikiPageModel;
 import utils.WikiPage;
-import view.SearcherView;
+import view.SearcherViewInterface;
+
 import java.util.ArrayList;
 public class SearchPresenter {
     private SearchSeriesModel seriesSearchModel;
     private SearchWikiPageModel wikiPageModel;
     Thread taskThread;
-    private SearcherView searchView;
+    private SearcherViewInterface searchView;
     private DataBaseModel dataBaseModel;
     private SeriesPresenter presenter;
     public SearchPresenter(DataBaseModel dataBaseModel, SearchSeriesModel seriesSearchModel, SearchWikiPageModel wikiPageModel,SeriesPresenter presenter){
@@ -19,7 +20,7 @@ public class SearchPresenter {
         this.presenter = presenter;
         this.dataBaseModel = dataBaseModel;
     }
-    public void setView(SearcherView searchView){  this.searchView = searchView;  }
+    public void setView(SearcherViewInterface searchView){  this.searchView = searchView;  }
     public void showSeriesSearchResults(){
         ArrayList<WikiPage> results = seriesSearchModel.getSearchResults();
         EditScoredSeries(results);
