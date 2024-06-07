@@ -7,7 +7,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 
-public class ScoredView extends PanelView implements ScoredViewInterface {
+public class ScoredView implements ScoredViewInterface {
     private JPanel scorePanel;
     private JTable scoresTable;
     private ArrayList<WikiPage> scoredSeries;

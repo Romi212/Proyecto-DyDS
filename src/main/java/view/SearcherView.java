@@ -17,8 +17,8 @@ public class SearcherView implements SearcherViewInterface {
     private JButton saveLocallyButton;
     private JSlider scoreSlideBar;
     private JButton setScoreButton;
-    private JLabel noScoreFoundLabel;
     private JPanel noScorePanel;
+    private JLabel noScoreFoundLabel;
     private SearchPresenter presenter;
     private WikiPage lastSearchedSeries;
 
@@ -67,12 +67,12 @@ public class SearcherView implements SearcherViewInterface {
         for(WikiPage wikiPage : wikiPages){
             wikiPage.getGraphicMenuItem().addActionListener(actionEvent -> {
                 lastSearchedSeries = wikiPage;
-                //TODO CAMBIAR????
                 presenter.getSelectedExtract();
-
             });
             searchOptionsMenu.add(wikiPage.getGraphicMenuItem());
-            searchOptionsMenu.show(searchResultTextPane, searchResultTextPane.getX(), searchResultTextPane.getY());
+            SwingUtilities.invokeLater(() -> {
+                searchOptionsMenu.show(searchResultTextPane, searchResultTextPane.getX(), searchResultTextPane.getY());
+            });
         }
     }
     @Override

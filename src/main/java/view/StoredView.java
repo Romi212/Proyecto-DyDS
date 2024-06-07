@@ -72,7 +72,10 @@ public class StoredView implements StoredViewInterface {
     }
     @Override
     public void setSelectedExtract(String extract) {
-        showSavedTextPane.setText(extract);
+        SwingUtilities.invokeLater(() -> {
+            showSavedTextPane.setText(extract);
+            showSavedTextPane.setCaretPosition(0);
+        });
     }
 
     @Override
